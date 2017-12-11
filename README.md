@@ -1,4 +1,4 @@
-# user_mgmt
+# user-mgmt
 *Escribe un programa PHP que valide a los usuarios para acceder a su página personal. 
 Realiza la aplicación siguiendo el patrón MVC.
 Cuando alguien visita el sitio web se le presentará un formulario invitándole a introducir un
@@ -13,7 +13,7 @@ solicitando el nombre de usuario y contraseña.
 Si el usuario pretende entrar directamente a la página de contenido sin pasar previamente
 por la ventana de login se le mostrará el formulario de login para que se valide.*
 
-Rama: "user_mgmt"
+Rama: "user-mgmt"
 
 Orientaciones:
 
@@ -35,7 +35,7 @@ un mensaje personalizado con su nombre y un cuadro de su pintor favorito.
 Además la aplicación permitirá al usuario la modificación de sus datos de perfil (nombre de usuario, contraseña, correo electrónico y pintor
 favorito). También podrá darse de baja de la aplicación.*
 
-Rama: "user_mgmt_oo_db"
+Rama: "user-mgmt-oo-db"
 
 Orientaciones:
 
