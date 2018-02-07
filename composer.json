@@ -1,0 +1,21 @@
+{
+    "name": "ivan/user-mgmt-ivandevappweb",
+    "description": "User Mgmt",
+    "type": "project",
+    "require": {
+        "eftec/bladeone": "^1.9",
+        "vlucas/phpdotenv": "^2.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "eftec\\": "vendor/eftec/",
+            "App\\": "clases/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Ivan Rodriguez",
+            "email": "jivanrod@gmail.com"
+        }
+    ]
+}
