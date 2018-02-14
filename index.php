@@ -54,6 +54,12 @@
 require "vendor/autoload.php";
 
 use eftec\bladeone;
+use Dotenv\Dotenv;
+use App\BD;
+use App\Auth;
+use App\Usuario;
+use App\Pintor;
+use App\Cuadro;
 
 define("ERROR_CON_BD", -1);
 define("ERROR_AUT", -2);
@@ -63,36 +69,36 @@ $cache = __DIR__ . '/cache';
 define("BLADEONE_MODE", 1); // (optional) 1=forced (test),2=run fast (production), 0=automatic, default value.
 $blade = new bladeone\BladeOne($views, $cache);
 
-$dotenv = new Dotenv\Dotenv(__DIR__);
+$dotenv = new Dotenv(__DIR__);
 $dotenv->load();
 
-\App\Auth::init();
+Auth::init();
 
 try {
-    $bd = \App\BD::getConexion();
+    $bd = BD::getConexion();
 } catch (Exception $e) {
     $error = ERROR_CON_BD;
     echo $blade->run("formlogin", compact('error'));
     die;
 }
 // Si el usuario ya está validado
-if (\App\Auth::check()) {
+if (Auth::check()) {
     // Si es una petición de cierre de sesión
     if (isset($_REQUEST['botonpetlogout'])) {
         // destruyo la sesión
-        \App\Auth::logout();
+        Auth::logout();
         // Redirijo al cliente a la vista del formulario de login
         echo $blade->run("formlogin");
         die;
     } else if (isset($_REQUEST['botonpetperfil'])) {
-        $pintores = App\Pintor::getPintores($bd);
-        $usuario = \App\Auth::loggedUsuario();
+        $pintores = Pintor::recuperaPintores($bd);
+        $usuario = Auth::loggedUsuario();
         // Muestro la vista de formulario de perfil
 
         echo $blade->run("perfil", compact('usuario', 'pintores'));
         die;
     } else if (isset($_POST['botonpetprocperfil'])) {
-        $usuario = \App\Auth::loggedUsuario();
+        $usuario = Auth::loggedUsuario();
         $nombre = $_POST['nombre'];
         $clave = $_POST['clave'];
         $email = $_POST['email'];
@@ -101,7 +107,7 @@ if (\App\Auth::check()) {
         $usuario->setNombre($nombre);
         $usuario->setClave($clave);
         $usuario->setEmail($email);
-        $pintor = \App\Pintor::getPintorByNombre($bd, $pintor);
+        $pintor = Pintor::recuperaPintorPorNombre($bd, $pintor);
         $usuario->setPintor($pintor);
         $usuario->persist($bd);
         $cuadro = $usuario->getPintor()->getCuadroAleatorio();
@@ -109,16 +115,16 @@ if (\App\Auth::check()) {
         echo $blade->run("private", compact('usuario', 'cuadro', 'resultado'));
         die;
     } else if (isset($_POST['baja'])) {
-        $usuario = \App\Auth::loggedUsuario();
+        $usuario = Auth::loggedUsuario();
         $usuario->delete($bd);
-        \App\Auth::logout();
+        Auth::logout();
         echo $blade->run("formlogin");
         die;
     }
     //En otro caso 
     else {
         // Redirijo al cliente a la vista de contenido
-        $usuario = \App\Auth::loggedUsuario();
+        $usuario = Auth::loggedUsuario();
         $cuadro = $usuario->getPintor()->getCuadroAleatorio();
         echo $blade->run("private", compact('usuario', 'cuadro'));
         die;
@@ -141,9 +147,9 @@ if (\App\Auth::check()) {
         echo $blade->run("formlogin", compact('nombre', 'nombreOK', 'clave', 'claveOK'));
         die;
     }
-    $usuario = App\Usuario::getByCredencial($bd, $nombre, $clave);
+    $usuario = Usuario::recuperarPorCredencial($bd, $nombre, $clave);
     if ($usuario) {
-        \App\Auth::login($usuario);
+        Auth::login($usuario);
         // Redirijo al cliente a la vista de contenido
 
         $cuadro = $usuario->getPintor()->getCuadroAleatorio();
@@ -162,7 +168,7 @@ if (\App\Auth::check()) {
     }
 // En cualquier otro caso
 } else if (isset($_REQUEST['botonpetregistro'])) {
-    $pintores = App\Pintor::getPintores($bd);
+    $pintores = Pintor::recuperaPintores($bd);
     // Si los credenciales son correctos
     echo $blade->run("registro", compact('pintores'));
     die;
@@ -176,12 +182,12 @@ if (\App\Auth::check()) {
     $emailOK = filter_var(trim($email), FILTER_VALIDATE_EMAIL);
     $pintor = $_POST['pintor'];
     if (!$nombreOK || !$claveOK || !$emailOK) {
-        $pintores = App\Pintor::getPintores($bd);
+        $pintores = Pintor::recuperaPintores($bd);
         echo $blade->run("registro", compact('nombre', 'nombreOK', 'clave', 'claveOK', 'email', 'emailOK', 'pintores'));
         die;
     }
     try {
-        $usuario = App\Usuario::construye($bd, $nombre, $clave, $email, $pintor);
+        $usuario = Usuario::construye($bd, $nombre, $clave, $email, $pintor);
         $usuario->persist($bd);
     } catch (Exception $e) {
         switch ((int) ($e->getCode())) {
@@ -195,7 +201,7 @@ if (\App\Auth::check()) {
                 die();
         }
     }
-    \App\Auth::login($usuario);
+    Auth::login($usuario);
     $cuadro = $usuario->getPintor()->getCuadroAleatorio();
     echo $blade->run("private", compact('usuario', 'cuadro'));
     die;

@@ -6,7 +6,7 @@ class Cuadro {
     private $titulo;
     private $imagen;
 
-    public static function getCuadrosByPintorId($bd, $pintorId) {
+    public static function recuperaCuadrosPorPintorId($bd, $pintorId) {
         $sql = 'select * from cuadros where pintor_fk=:id';
         $sthSql = $bd->prepare($sql);
         $sthSql->execute([":id" => $pintorId]);

@@ -10,21 +10,21 @@ class Usuario {
     private $email;
     private $pintor;
 
-    public static function getByCredencial($bd, $nombre, $clave) {
+    public static function recuperarPorCredencial($bd, $nombre, $clave) {
         $sql = 'select * from usuarios where nombre=:nombre and clave=:clave';
         $sth = $bd->prepare($sql);
         $sth->execute([":nombre" => $nombre, ":clave" => $clave]);
         $sth->setFetchMode(\PDO::FETCH_CLASS, '\App\Usuario');
         $usuario = $sth->fetch();
         if ($usuario) {
-            $usuario->setPintor(Pintor::getPintorById($bd, $usuario->pintor_fk));
+            $usuario->setPintor(Pintor::recuperaPintorPorId($bd, $usuario->pintor_fk));
         }
         return $usuario;
     }
 
     static public function construye($bd, $nombre, $clave, $email, $pintorNombre) {
         $usuario = new Usuario($nombre, $clave, $email, $pintorNombre);
-        $usuario->setPintor(Pintor::getPintorByNombre($bd, $pintorNombre));
+        $usuario->setPintor(Pintor::recuperaPintorPorNombre($bd, $pintorNombre));
         return ($usuario);
     }
 

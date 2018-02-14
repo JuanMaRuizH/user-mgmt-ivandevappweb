@@ -8,17 +8,17 @@ class Pintor {
     private $nombre;
     private $cuadros;
 
-    public static function getPintorByNombre($bd, $nombre) {
+    public static function recuperaPintorPorNombre($bd, $nombre) {
         $sql = 'select * from pintores where nombre=:nombre';
         $sthSql = $bd->prepare($sql);
         $sthSql->execute([":nombre" => $nombre]);
         $sthSql->setFetchMode(\PDO::FETCH_CLASS, '\App\Pintor');
         $pintor = $sthSql->fetch();
-        $pintor->setCuadros(Cuadro::getCuadrosByPintorId($bd, $pintor->getId()));
+        $pintor->setCuadros(Cuadro::recuperaCuadrosPorPintorId($bd, $pintor->getId()));
         return $pintor;
     }
 
-    public static function getPintores($bd) {
+    public static function recuperaPintores($bd) {
         $sql = 'select * from pintores';
         $sthSql = $bd->prepare($sql);
         $sthSql->execute();
@@ -27,13 +27,13 @@ class Pintor {
         return $pintores;
     }
 
-    public static function getPintorById($bd, $id) {
+    public static function recuperaPintorPorId($bd, $id) {
         $sql = 'select * from pintores where id=:id';
         $sthSql = $bd->prepare($sql);
         $sthSql->execute([":id" => $id]);
         $sthSql->setFetchMode(\PDO::FETCH_CLASS, '\App\Pintor');
         $pintor = $sthSql->fetch();
-        $pintor->setCuadros(Cuadro::getCuadrosByPintorId($bd, $pintor->getId()));
+        $pintor->setCuadros(Cuadro::recuperaCuadrosPorPintorId($bd, $pintor->getId()));
         return $pintor;
     }
 

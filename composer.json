@@ -1,6 +1,6 @@
 {
-    "name": "ivan/user-mgmt-ivandevappweb",
-    "description": "User Mgmt",
+    "name": "ivan/hangman-ivandevappweb",
+    "description": "Hangman",
     "type": "project",
     "require": {
         "eftec/bladeone": "^1.9",
