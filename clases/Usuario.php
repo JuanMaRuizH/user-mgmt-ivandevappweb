@@ -14,7 +14,7 @@ class Usuario {
         $sql = 'select * from usuarios where nombre=:nombre and clave=:clave';
         $sth = $bd->prepare($sql);
         $sth->execute([":nombre" => $nombre, ":clave" => $clave]);
-        $sth->setFetchMode(\PDO::FETCH_CLASS, '\App\Usuario');
+        $sth->setFetchMode(\PDO::FETCH_CLASS, Usuario::class);
         $usuario = $sth->fetch();
         if ($usuario) {
             $usuario->setPintor(Pintor::recuperaPintorPorId($bd, $usuario->pintor_fk));

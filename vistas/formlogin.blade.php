@@ -1,4 +1,4 @@
-@extends('app')
+@extends('app', ['auth' => $auth])
 
 @section('title')
 Formulario login

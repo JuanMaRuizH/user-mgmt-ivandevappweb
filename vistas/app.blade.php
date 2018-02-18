@@ -22,7 +22,7 @@
                 <div class="navbar-header">
                     <a class="navbar-brand" href="#">User Mgmt</a>
                 </div>
-                @unless(\App\Auth::loggedUsuario())
+                @unless($auth->check())
                 <div class="d-flex">
                     @yield('loginregistro')
                     <!-- Authentication Links -->
@@ -31,7 +31,7 @@
                 @else
                 <div class="d-flex dropdown p-2">
                     <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        {{ \App\Auth::loggedUsuario()->getNombre() }} 
+                        {{ $auth->loggedUsuario()->getNombre() }} 
                     </button>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                         <a class="dropdown-item" href="index.php?botonpetperfil">Perfil</a>

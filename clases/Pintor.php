@@ -12,7 +12,7 @@ class Pintor {
         $sql = 'select * from pintores where nombre=:nombre';
         $sthSql = $bd->prepare($sql);
         $sthSql->execute([":nombre" => $nombre]);
-        $sthSql->setFetchMode(\PDO::FETCH_CLASS, '\App\Pintor');
+        $sthSql->setFetchMode(\PDO::FETCH_CLASS, Pintor::class);
         $pintor = $sthSql->fetch();
         $pintor->setCuadros(Cuadro::recuperaCuadrosPorPintorId($bd, $pintor->getId()));
         return $pintor;
@@ -22,7 +22,7 @@ class Pintor {
         $sql = 'select * from pintores';
         $sthSql = $bd->prepare($sql);
         $sthSql->execute();
-        $sthSql->setFetchMode(\PDO::FETCH_CLASS, '\App\Pintor');
+        $sthSql->setFetchMode(\PDO::FETCH_CLASS, Pintor::class);
         $pintores = $sthSql->fetchAll();
         return $pintores;
     }
@@ -31,7 +31,7 @@ class Pintor {
         $sql = 'select * from pintores where id=:id';
         $sthSql = $bd->prepare($sql);
         $sthSql->execute([":id" => $id]);
-        $sthSql->setFetchMode(\PDO::FETCH_CLASS, '\App\Pintor');
+        $sthSql->setFetchMode(\PDO::FETCH_CLASS, Pintor::class);
         $pintor = $sthSql->fetch();
         $pintor->setCuadros(Cuadro::recuperaCuadrosPorPintorId($bd, $pintor->getId()));
         return $pintor;

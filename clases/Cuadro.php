@@ -10,7 +10,7 @@ class Cuadro {
         $sql = 'select * from cuadros where pintor_fk=:id';
         $sthSql = $bd->prepare($sql);
         $sthSql->execute([":id" => $pintorId]);
-        $sthSql->setFetchMode(\PDO::FETCH_CLASS, '\App\Cuadro');
+        $sthSql->setFetchMode(\PDO::FETCH_CLASS, Cuadro::class);
         $cuadros = $sthSql->fetchAll();
         return new \Ds\Vector($cuadros);
     }

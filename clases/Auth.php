@@ -4,25 +4,34 @@ namespace App;
 
 class Auth {
 
-    public static function init() {
+    protected static $auth = null;
+
+    public static function getAuth() {
+        if (!self::$auth) {
+            self::$auth = new Auth();
+        }
+        return self::$auth;
+    }
+
+    public function init() {
         session_start();
     }
 
-    public static function logout() {
+    public function logout() {
         session_unset();
         session_destroy();
         setcookie(session_name(), '', 0, '/');
     }
 
-    public static function login($usuario) {
+    public function login($usuario) {
         $_SESSION['usuario'] = $usuario;
     }
 
-    public static function loggedUsuario() {
-        return (isset($_SESSION['usuario']) ? $_SESSION['usuario'] : false);
+    public function loggedUsuario() {
+        return $_SESSION['usuario'];
     }
 
-    public static function check() {
+    public function check() {
         return (isset($_SESSION['usuario']));
     }
 
