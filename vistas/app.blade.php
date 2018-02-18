@@ -36,6 +36,7 @@
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                         <a class="dropdown-item" href="index.php?botonpetperfil">Perfil</a>
                         <a class="dropdown-item" href="index.php?botonpetlogout">Logout</a>
+                        <a class="dropdown-item" href="index.php?botonpetbaja">Baja</a>
                     </div>
                 </div>
                 @endunless

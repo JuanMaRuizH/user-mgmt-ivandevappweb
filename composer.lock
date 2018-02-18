@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "280c5affce89a8814a6bef9fe274e52c",
-    "content-hash": "02c9212644b272dd9fb7fb7a6c1aeea1",
+    "hash": "4d633d45c6d4325035d4c92ac500364c",
+    "content-hash": "a829e2709f55b44ffc3696d58f67ce59",
     "packages": [
         {
             "name": "eftec/bladeone",

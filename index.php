@@ -111,14 +111,14 @@ if ($auth->check()) {
         $usuario->setEmail($email);
         $pintor = Pintor::recuperaPintorPorNombre($bd, $pintor);
         $usuario->setPintor($pintor);
-        $usuario->persist($bd);
+        $usuario->persiste($bd);
         $cuadro = $usuario->getPintor()->getCuadroAleatorio();
         $resultado = true;
         echo $blade->run("private", compact('auth', 'usuario', 'cuadro', 'resultado'));
         die;
-    } else if (isset($_POST['baja'])) {
+    } else if (isset($_REQUEST['botonpetbaja'])) {
         $usuario = $auth->loggedUsuario();
-        $usuario->delete($bd);
+        $usuario->elimina($bd);
         $auth->logout();
         echo $blade->run("formlogin", compact('auth'));
         die;
@@ -149,7 +149,7 @@ if ($auth->check()) {
         echo $blade->run("formlogin", compact('auth', 'nombre', 'nombreOK', 'clave', 'claveOK'));
         die;
     }
-    $usuario = Usuario::recuperarPorCredencial($bd, $nombre, $clave);
+    $usuario = Usuario::recuperaUsuarioPorCredencial($bd, $nombre, $clave);
     if ($usuario) {
         $auth->login($usuario);
         // Redirijo al cliente a la vista de contenido
@@ -190,7 +190,7 @@ if ($auth->check()) {
     }
     try {
         $usuario = Usuario::construye($bd, $nombre, $clave, $email, $pintor);
-        $usuario->persist($bd);
+        $usuario->persiste($bd);
     } catch (Exception $e) {
         switch ((int) ($e->getCode())) {
             case 23000:

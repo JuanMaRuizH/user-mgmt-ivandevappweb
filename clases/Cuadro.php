@@ -1,37 +1,44 @@
 <?php
+
+
 namespace App;
 
-class Cuadro {
+use \PDO as PDO;
+
+class Cuadro
+{
     private $id;
     private $titulo;
     private $imagen;
 
-    public static function recuperaCuadrosPorPintorId($bd, $pintorId) {
+    public static function recuperaCuadrosPorPintorId(PDO $bd, int $pintorId) : array
+    {
         $sql = 'select * from cuadros where pintor_fk=:id';
         $sthSql = $bd->prepare($sql);
         $sthSql->execute([":id" => $pintorId]);
         $sthSql->setFetchMode(\PDO::FETCH_CLASS, Cuadro::class);
         $cuadros = $sthSql->fetchAll();
-        return new \Ds\Vector($cuadros);
+        return $cuadros;
     }
 
-    public function __construct() {    
-    }
 
-    public function getTitulo() {
+    public function getTitulo() : string
+    {
         return $this->titulo;
     }
 
-    public function setTitulo($titulo) {
+    public function setTitulo($titulo)
+    {
         $this->titulo = $titulo;
     }
 
-    public function getImagen() {
+    public function getImagen() : string
+    {
         return $this->imagen;
     }
 
-    public function setImagen($imagen) {
+    public function setImagen($imagen)
+    {
         $this->imagen = $imagen;
     }
-
 }
