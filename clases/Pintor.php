@@ -19,7 +19,7 @@ class Pintor
         $sth->setFetchMode(PDO::FETCH_CLASS, Pintor::class);
         $pintor = ($sth->fetch()) ?: null;
         if ($pintor) {
-            $pintor->setCuadros(new Vector(Cuadro::recuperaCuadrosPorPintorId($bd, $pintor->getId())));
+            $pintor->setCuadros(Cuadro::recuperaCuadrosPorPintorId($bd, $pintor->getId()));
             return $pintor;
         }
     }
@@ -42,7 +42,7 @@ class Pintor
         $sth->setFetchMode(PDO::FETCH_CLASS, Pintor::class);
         $pintor = ($sth->fetch()) ?: null;
         if ($pintor) {
-            $pintor->setCuadros(new Vector(Cuadro::recuperaCuadrosPorPintorId($bd, $pintor->getId())));
+            $pintor->setCuadros(Cuadro::recuperaCuadrosPorPintorId($bd, $pintor->getId()));
         }
         return $pintor;
     }
@@ -62,22 +62,22 @@ class Pintor
         return $this->nombre;
     }
 
-    public function setNombre($nombre)
+    public function setNombre(string $nombre)
     {
         $this->nombre = $nombre;
     }
 
-    public function setCuadros($cuadros)
+    public function setCuadros(array $cuadros)
     {
-        $this->cuadros = $cuadros;
+        $this->cuadros = new Vector($cuadros);
     }
 
-    public function getCuadros()
+    public function getCuadros() : Vector
     {
         return $this->cuadros;
     }
 
-    public function getCuadroAleatorio()
+    public function getCuadroAleatorio() : ?Cuadro
     {
         return $this->getCuadros()->get(rand(0, count($this->getCuadros()) - 1));
     }

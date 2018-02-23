@@ -11,34 +11,36 @@
  *   - Petición de formulario de Perfil
  *      -- Mostrar la vista perfil con el formulario de perfil del usuario
  *   - Petición de Proceso de datos de perfil
- *      -- Recupero el usuario de la sesión
- *      -- Modifico sus propiedades con los campos del formulario
+ *      -- Recuperar el usuario de la sesión
+ *      -- Modificar sus propiedades con los campos del formulario
  *      -- Si el nombre del pintor favorito ha cambiado 
- *           -- Recupero el objeto correspondiente al nuevo pintor
- *           -- Relaciono el usuario con el nuevo pintor
- *      -- Pido al usuario que persista sus cambios
- *      -- Pido al usuario un cuadro aleatorio
+ *           -- Recuperar el objeto correspondiente al nuevo pintor
+ *           -- Relacionar el usuario con el nuevo pintor
+ *      -- Pedir al usuario que persista sus cambios
+ *      -- Pedir al usuario un cuadro aleatorio
  *      -- Mostrar la vista "private" con la información personalizada del usuario
  *   - Petición de baja
- *      -- Recupero el usuario que tiene la sesión abierta
- *      -- Pido al usuario que se borre
- *      -- Cierro la sesión
+ *      -- Recuperar el usuario que tiene la sesión abierta
+ *      -- Pedir al usuario que se borre
+ *      -- Cerrar la sesión
  *   - En otro caso
- *      -- Recupero el usuario que tiene la sesión abierta
- *      -- Pido al usuario un cuadro aleatorio
+ *      -- Recuperar el usuario que tiene la sesión abierta
+ *      -- Pediro al usuario un cuadro aleatorio
  *      -- Mostrar la vista "private" con la información personalizada del usuario
  * - Sino
  *   - Petición Inicial
  *     -- Mostrar la vista "formlogin" de petición de credenciales para iniciar una sesión con la aplicación.
  *   - Proceso Formulario Login
  *     -- Leer los valores del formulario (nombre de usuasio y contraseña)
- *     -- Si los credenciales son correctos mostrar la vista "private" con información personaizada
- *              sino mostrar la vista "formlogin" con un mensaje de error de validación
+ *     -- Si los credenciales son correctos 
+ *           -- mostrar la vista "private" con información personaizada
+ *        sino 
+ *           -- mostrar la vista "formlogin" con un mensaje de error de validación
  *   - Petición de Registro
- *     -- Recupero la lista de pintores
+ *     -- Recuperar la lista de pintores
  *     -- Mostrar el formulario de registro de usuario
  *   - Proceso de formulario de registro
- *     -- Leo los datos del formulario de registro
+ *     -- Leer los datos del formulario de registro
  *     -- Construyo un usuario para persistir
  *     -- Pido al usuario que se persista
  *     -- Inicio una sesión en nombre del usuario
@@ -59,7 +61,6 @@ use App\BD;
 use App\Auth;
 use App\Usuario;
 use App\Pintor;
-use App\Cuadro;
 
 define("ERROR_CON_BD", -1);
 define("ERROR_AUT", -2);
@@ -113,8 +114,7 @@ if ($auth->check()) {
         $usuario->setPintor($pintor);
         $usuario->persiste($bd);
         $cuadro = $usuario->getPintor()->getCuadroAleatorio();
-        $resultado = true;
-        echo $blade->run("private", compact('auth', 'usuario', 'cuadro', 'resultado'));
+        echo $blade->run("private", compact('auth', 'usuario', 'cuadro'));
         die;
     } else if (isset($_REQUEST['botonpetbaja'])) {
         $usuario = $auth->loggedUsuario();
@@ -182,14 +182,15 @@ if ($auth->check()) {
     $claveOK = filter_var(trim($clave), FILTER_VALIDATE_REGEXP, ['options' => ['regexp' => "/^\w{3,25}$/"]]);
     $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
     $emailOK = filter_var(trim($email), FILTER_VALIDATE_EMAIL);
-    $pintor = $_POST['pintor'];
+    $pintorNombre = $_POST['pintor'];
     if (!$nombreOK || !$claveOK || !$emailOK) {
         $pintores = Pintor::recuperaPintores($bd);
         echo $blade->run("registro", compact('auth', 'nombre', 'nombreOK', 'clave', 'claveOK', 'email', 'emailOK', 'pintores'));
         die;
     }
     try {
-        $usuario = Usuario::construye($bd, $nombre, $clave, $email, $pintor);
+        $usuario = new Usuario ($nombre, $clave, $email, $pintorNombre);
+        $usuario->setPintor(Pintor::recuperaPintorPorNombre($bd, $pintorNombre));
         $usuario->persiste($bd);
     } catch (Exception $e) {
         switch ((int) ($e->getCode())) {

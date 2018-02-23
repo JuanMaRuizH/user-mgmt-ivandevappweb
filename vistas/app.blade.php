@@ -26,7 +26,6 @@
                 <div class="d-flex">
                     @yield('loginregistro')
                     <!-- Authentication Links -->
-                    <a 
                 </div>
                 @else
                 <div class="d-flex dropdown p-2">

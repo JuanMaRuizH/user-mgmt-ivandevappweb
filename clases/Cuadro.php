@@ -1,6 +1,4 @@
 <?php
-
-
 namespace App;
 
 use \PDO as PDO;
@@ -16,7 +14,7 @@ class Cuadro
         $sql = 'select * from cuadros where pintor_fk=:id';
         $sthSql = $bd->prepare($sql);
         $sthSql->execute([":id" => $pintorId]);
-        $sthSql->setFetchMode(\PDO::FETCH_CLASS, Cuadro::class);
+        $sthSql->setFetchMode(PDO::FETCH_CLASS, Cuadro::class);
         $cuadros = $sthSql->fetchAll();
         return $cuadros;
     }

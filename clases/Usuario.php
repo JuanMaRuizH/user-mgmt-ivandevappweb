@@ -25,14 +25,6 @@ class Usuario
         return $usuario;
     }
 
-    public static function construye(PDO $bd, string $nombre, string $clave, string $email, string $pintorNombre): ?Usuario
-    {
-        $usuario = new Usuario($nombre, $clave, $email, $pintorNombre);
-
-        $usuario->setPintor(Pintor::recuperaPintorPorNombre($bd, $pintorNombre));
-        return ($usuario);
-    }
-
     public function __construct(string $nombre = null, string $clave = null, string $email = null, string $pintorNombre = null)
     {
         if (!is_null($nombre)) {
@@ -97,11 +89,11 @@ class Usuario
             if ($this->id) {
                 $sql = "update usuarios set nombre = :nombre, clave = :clave, email = :email, pintor_fk = :pintor where id = :id";
                 $sth = $bd->prepare($sql);
-                $result = $sth->execute([":nombre" => $this->nombre, ":clave" => $this->clave, ":email" => $this->email, ":pintor" => $this->pintor->getId(), ":id" => $this->id]);
+                $result = $sth->execute([":nombre" => $this->getNombre(), ":clave" => $this->getclave(), ":email" => $this->getEmail(), ":pintor" => $this->getPintor()->getId(), ":id" => $this->id]);
             } else {
                 $sql = "insert into usuarios (nombre, clave, email, pintor_fk) values (:nombre, :clave, :email, :pintor)";
                 $sth = $bd->prepare($sql);
-                $result = $sth->execute([":nombre" => $this->nombre, ":clave" => $this->clave, ":email" => $this->email, ":pintor" => $this->pintor->getId()]);
+                $result = $sth->execute([":nombre" => $this->getNombre(), ":clave" => $this->getClave(), ":email" => $this->getEmail(), ":pintor" => $this->getPintor()->getId()]);
                 if ($result) {
                     $this->id = (int) $bd->lastInsertId();
                 }
@@ -116,7 +108,7 @@ class Usuario
     {
         $sql = "delete from usuarios where id = :id";
         $sth = $bd->prepare($sql);
-        $result = $sth->execute([":id" => $this->id]);
+        $result = $sth->execute([":id" => $this->getId()]);
         return $result;
     }
 }
