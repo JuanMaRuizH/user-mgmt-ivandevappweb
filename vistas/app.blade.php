@@ -20,7 +20,7 @@
         <div style="display: flex; flex-flow: column; height: 100vh">
             <nav class="navbar navbar-default d-flex flex-row">
                 <div class="navbar-header">
-                    <a class="navbar-brand" href="#">User Mgmt</a>
+                    <a class="navbar-brand" href="index.php">User Mgmt</a>
                 </div>
                 @unless($auth->check())
                 <div class="d-flex">

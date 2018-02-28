@@ -196,11 +196,11 @@ if ($auth->check()) {
         switch ((int) ($e->getCode())) {
             case 23000:
                 $registroMsg = "Nombre de usuario no está disponible. Inténtalo de nuevo";
-                echo $blade->run("registro", compact('pintores'));
+                echo $blade->run("registro", compact('auth', 'pintores'));
                 die();
             default:
                 $registroMsg = "Problemas con el alta de usuario";
-                echo $blade->run("registro", compact('pintores'));
+                echo $blade->run("registro", compact('auth', 'pintores'));
                 die();
         }
     }
