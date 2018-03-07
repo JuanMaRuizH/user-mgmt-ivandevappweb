@@ -13,6 +13,9 @@ Formulario registro
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="panel panel-default">
+                    @if (isset($error)) 
+                    <div class="alert alert-danger" role="alert">Error alta usuario</div>
+                    @endif
                 <div class="panel-heading">Registro</div>
                 <div class="panel-body mt-3">
                     <form class="form-horizontal" method="POST" action="index.php">

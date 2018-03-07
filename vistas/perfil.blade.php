@@ -5,28 +5,41 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="panel panel-default">
+                    @if (isset($error)) 
+                    <div class="alert alert-danger" role="alert">Error cambio de perfil</div>
+                    @endif
                 <div class="panel-heading">Perfil</div>
                 <div class="panel-body mt-3">
                     <form class="form-horizontal" method="POST" action="index.php">
                         <div class="form-group row">
                             <label for="inputNombre" class="col-sm-2 col-form-label">Nombre</label>
                             <div class="col-sm-10">
-                                <input id="inputNombre" type="text" required class="form-control" id="inputPassword" 
-                                       value="{{ $usuario->getNombre() }}" name="nombre">
+                                <input id="inputNombre" type="text" value="{{ $auth->loggedUsuario()->getNombre() }}""
+                                       class="{{ (isset($nombre) && !$nombre) ? "form-control is-invalid col-sm-10" : "form-control col-sm-10" }}" 
+                                       id="inputNombre" placeholder="Nombre" name="nombre">
+                                <div class="col-sm-10 invalid-feedback">
+                                    El nombre es obligatorio y tiene entre 3 y 25 caracteres
+                                </div>
                             </div>
                         </div>
                         <div class="form-group row">
                             <label for="inputEmail" class="col-sm-2 col-form-label">Email</label>
                             <div class="col-sm-10">
-                                <input id="inputEmail" type="email" required class="form-control" id="inputPassword" 
-                                       value="{{ $usuario->getEmail() }}" name="email">
+                                <input type="text" value="{{ $auth->loggedUsuario()->getEmail() }}"
+                                       class="{{ (isset($email) && !$email) ? "form-control is-invalid col-sm-10" : "form-control col-sm-10" }}" id="inputEmail" placeholder="Email" name="email">
+                                <div class="col-sm-10 invalid-feedback">
+                                    El email no tiene el formato correcto
+                                </div>
                             </div>
                         </div>
                         <div class="form-group row">
                             <label for="inputPassword" class="col-sm-2 col-form-label">Password</label>
                             <div class="col-sm-10">
-                                <input id="inputPassword" type="password" required class="form-control" 
-                                       value="{{ $usuario->getClave() }}" name="clave">
+                                <input type="password" value="{{ $auth->loggedUsuario()->getClave() }}"
+                                       class="{{ (isset($clave) && !$clave) ? "form-control is-invalid col-sm-10" : "form-control col-sm-10" }}" id="inputPassword" placeholder="Password" name="clave">
+                                <div class="col-sm-10 invalid-feedback">
+                                    La clave tiene entre 4 y 8 caracteres e incluya al menos un número
+                                </div>
                             </div>
                         </div>
                         <div class="form-group row">
