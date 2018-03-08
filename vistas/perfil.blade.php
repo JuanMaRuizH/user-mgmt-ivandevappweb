@@ -14,7 +14,7 @@
                         <div class="form-group row">
                             <label for="inputNombre" class="col-sm-2 col-form-label">Nombre</label>
                             <div class="col-sm-10">
-                                <input id="inputNombre" type="text" value="{{ $auth->loggedUsuario()->getNombre() }}""
+                                <input id="inputNombre" type="text" value="{{ $auth->loggedUsuario()->getNombre() }}"
                                        class="{{ (isset($nombre) && !$nombre) ? "form-control is-invalid col-sm-10" : "form-control col-sm-10" }}" 
                                        id="inputNombre" placeholder="Nombre" name="nombre">
                                 <div class="col-sm-10 invalid-feedback">
@@ -28,7 +28,7 @@
                                 <input type="text" value="{{ $auth->loggedUsuario()->getEmail() }}"
                                        class="{{ (isset($email) && !$email) ? "form-control is-invalid col-sm-10" : "form-control col-sm-10" }}" id="inputEmail" placeholder="Email" name="email">
                                 <div class="col-sm-10 invalid-feedback">
-                                    El email no tiene el formato correcto
+                                    El email es obligatorio y/o no tiene el formato correcto
                                 </div>
                             </div>
                         </div>
@@ -38,7 +38,7 @@
                                 <input type="password" value="{{ $auth->loggedUsuario()->getClave() }}"
                                        class="{{ (isset($clave) && !$clave) ? "form-control is-invalid col-sm-10" : "form-control col-sm-10" }}" id="inputPassword" placeholder="Password" name="clave">
                                 <div class="col-sm-10 invalid-feedback">
-                                    La clave tiene entre 4 y 8 caracteres e incluya al menos un número
+                                    La clave tiene entre 4 y 8 caracteres e incluye al menos un número
                                 </div>
                             </div>
                         </div>

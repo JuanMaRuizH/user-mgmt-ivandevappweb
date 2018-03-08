@@ -36,7 +36,7 @@ Formulario registro
                                 <input type="text" value="{{ (isset($email) ) ? $email : "" }}"
                                        class="{{ (isset($emailOK) && !$emailOK) ? "form-control is-invalid col-sm-10" : "form-control col-sm-10" }}" id="inputEmail" placeholder="Email" name="email">
                                 <div class="col-sm-10 invalid-feedback">
-                                    El email es obligatorio
+                                    El email es obligatorio y/o no tiene el formato correcto
                                 </div>
                             </div>
                         </div>
@@ -46,7 +46,7 @@ Formulario registro
                                 <input type="password" value="{{ (isset($clave) ) ? $clave : "" }}"
                                        class="{{ (isset($claveOK) && !$claveOK) ? "form-control is-invalid col-sm-10" : "form-control col-sm-10" }}" id="inputPassword" placeholder="Password" name="clave">
                                 <div class="col-sm-10 invalid-feedback">
-                                    La clave es obligatoria y tiene entre 3 y 25 chars
+                                    La clave tiene entre 4 y 8 caracteres e incluye al menos un número
                                 </div>
                             </div>
                         </div>

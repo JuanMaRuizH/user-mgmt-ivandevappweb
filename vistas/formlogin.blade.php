@@ -37,7 +37,7 @@ Formulario login
                             <input type="password" value="{{ (isset($clave) ) ? $clave : "" }}"
                                    class="{{ (isset($clave) && !$clave) ? "form-control is-invalid col-sm-10" : "form-control col-sm-10" }}" id="inputPassword" placeholder="Password" name="clave">
                             <div class="col-sm-10 invalid-feedback">
-                                La clave tiene entre 4 y 8 caracteres e incluya al menos un número
+                                La clave tiene entre 4 y 8 caracteres e incluye al menos un número
                             </div>
                         </div>        
                     </div>

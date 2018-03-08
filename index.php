@@ -243,7 +243,6 @@ if ($auth->check()) {
     
     $usuario = new Usuario($nombre, $clave, $email);
     $usuario->setPintor(Pintor::recuperaPintorPorNombre($bd, $pintorNombre));
-        $usuario->persiste($bd);
         try {        
             $usuario->persiste($bd);        
         } catch (PDOException $e) {
