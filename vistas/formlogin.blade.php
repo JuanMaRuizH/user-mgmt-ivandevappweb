@@ -1,8 +1,8 @@
-@extends('app', ['auth' => $auth]) 
+@extends('app') 
 @section('title') Formulario login
 @endsection
  
-@section('loginregistro')
+@section('topright')
 <a class="p-2" href="index.php?botonpetregistro">Registro</a>
 @endsection
  

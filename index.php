@@ -95,7 +95,7 @@ $auth->init();
 try {
     $bd = BD::getConexion();
 } catch (PDOException $error) {
-    echo $blade->run("cnxbderror", compact('auth', 'error'));
+    echo $blade->run("cnxbderror", compact('error'));
     die;
 }
 
@@ -106,13 +106,14 @@ if ($auth->check()) {
         // destruyo la sesión
         $auth->logout();
         // Redirijo al cliente a la vista del formulario de login
-        echo $blade->run("formlogin", compact($patterns, 'auth'));
+        echo $blade->run("formlogin", compact($patterns));
         die;
     } elseif (isset($_REQUEST['botonpetperfil'])) {
+        $usuario = $auth->loggedUsuario();
         $pintores = Pintor::recuperaPintores($bd);
         // Muestro la vista de formulario de perfil
 
-        echo $blade->run("perfil", compact($patterns, 'auth', 'pintores'));
+        echo $blade->run("perfil", compact($patterns, 'usuario', 'pintores'));
         die;
     } elseif (isset($_POST['botonpetprocperfil'])) {
         $usuario = $auth->loggedUsuario();
@@ -138,7 +139,7 @@ if ($auth->check()) {
         $pintorAnterior = $usuario->getPintor();
         if (!$nombre || !$clave || !$email) {
             $pintores = Pintor::recuperaPintores($bd);
-            echo $blade->run("perfil", compact($patterns, 'auth', 'nombre', 'clave', 'email', 'pintores'));
+            echo $blade->run("perfil", compact($patterns, 'usuario', 'pintores', 'nombre', 'clave', 'email'));
             die;
         }
         
@@ -157,17 +158,17 @@ if ($auth->check()) {
             $usuario->setPintor($pintorAnterior);
             $error = true;
             $pintores = Pintor::recuperaPintores($bd);
-            echo $blade->run("perfil", compact($patterns, 'auth', 'pintores', 'error'));
+            echo $blade->run("perfil", compact($patterns, 'usuario', 'pintores', 'error'));
             die();
         }
         $cuadro = $usuario->getPintor()->getCuadroAleatorio();
-        echo $blade->run("private", compact('auth', 'cuadro'));
+        echo $blade->run("private", compact('usuario', 'cuadro'));
         die;
     } elseif (isset($_REQUEST['botonpetbaja'])) {
         $usuario = $auth->loggedUsuario();
         $usuario->elimina($bd);
         $auth->logout();
-        echo $blade->run("formlogin", compact($patterns, 'auth'));
+        echo $blade->run("formlogin", compact($patterns));
         die;
     }
     //En otro caso
@@ -182,7 +183,7 @@ if ($auth->check()) {
     // Si se está solicitando el formulario de login
 } elseif ((empty($_REQUEST)) || isset($_REQUEST['botonpetlogin'])) {
     // Redirijo al cliente a la vista del formulario de login
-    echo $blade->run("formlogin", compact($patterns, 'auth'));
+    echo $blade->run("formlogin", compact($patterns));
     die;
 
 // Si se está enviando el formulario de login con los datos
@@ -199,7 +200,7 @@ if ($auth->check()) {
     );
 
     if (!$nombre || !$clave) {
-        echo $blade->run("formlogin", compact($patterns, 'auth', 'nombre', 'clave'));
+        echo $blade->run("formlogin", compact($patterns, 'nombre', 'clave'));
         die;
     }
     $usuario = Usuario::recuperaUsuarioPorCredencial($bd, $nombre, $clave);
@@ -209,7 +210,7 @@ if ($auth->check()) {
 
         $cuadro = $usuario->getPintor()->getCuadroAleatorio();
 
-        echo $blade->run("private", compact('auth', 'cuadro', 'error'));
+        echo $blade->run("private", compact('usuario', 'cuadro', 'error'));
         die;
     }
 
@@ -218,14 +219,14 @@ if ($auth->check()) {
         // Establezco un mensaje de error para la
         $error = true;
         // Redirijo al cliente a la vista del formulario de login
-        echo $blade->run("formlogin", compact($patterns, 'auth', 'error'));
+        echo $blade->run("formlogin", compact($patterns, 'error'));
         die;
     }
     // En cualquier otro caso
 } elseif (isset($_REQUEST['botonpetregistro'])) {
     $pintores = Pintor::recuperaPintores($bd);
     // Si los credenciales son correctos
-    echo $blade->run("registro", compact($patterns, 'auth', 'pintores'));
+    echo $blade->run("registro", compact($patterns, 'pintores'));
     die;
 } elseif (isset($_POST['botonpetprocregistro'])) {
     $nombre = filter_var(
@@ -244,8 +245,9 @@ if ($auth->check()) {
         ['options' => ['regexp' => REGEXP_EMAIL]]
     );
     $pintorNombre = $_POST['pintor'];
+    $pintores = Pintor::recuperaPintores($bd);
     if (!$nombre || !$clave || !$email) {
-        echo $blade->run("registro", compact($patterns, 'auth', 'nombre', 'clave', 'email'));
+        echo $blade->run("registro", compact($patterns, 'nombre', 'clave', 'email'));
         die;
     } 
     
@@ -255,17 +257,17 @@ if ($auth->check()) {
             $usuario->persiste($bd);        
         } catch (PDOException $e) {
             $error = true;
-            echo $blade->run("registro", compact($patterns, 'auth', 'error'));
+            echo $blade->run("registro", compact($patterns, 'error'));
             die();
         }
         $auth->login($usuario);
         // Redirijo al cliente a la vista de contenido
     $cuadro = $usuario->getPintor()->getCuadroAleatorio();
-    echo $blade->run("private", compact('auth', 'cuadro'));
+    echo $blade->run("private", compact('usuario', 'cuadro'));
     die;
 } else {
     // Redirijo al cliente a la vista del formulario de login
-    echo $blade->run("formlogin", compact($patterns, 'auth'));
+    echo $blade->run("formlogin", compact($patterns));
     die;
 }
 ?>

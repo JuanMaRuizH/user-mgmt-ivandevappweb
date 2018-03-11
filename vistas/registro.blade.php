@@ -4,7 +4,7 @@
 Formulario registro
 @endsection
 
-@section('loginregistro')
+@section('topright')
 <a class="p-2" href="index.php?botonpetlogin">Login</a>
 @endsection
 
@@ -23,7 +23,7 @@ Formulario registro
                             <label for="inputNombre" class="col-sm-2 col-form-label">Nombre</label>
                             <div class="col-sm-10">
                                 <input id="inputNombre" type="text" value="{{ (isset($nombre) ) ? $nombre : "" }}"
-                                       class="{{ (isset($nombreOK) && !$nombreOK) ? "form-control is-invalid col-sm-10" : "form-control col-sm-10" }}" 
+                                       class="{{ (isset($nombre) && !$nombre) ? "form-control is-invalid col-sm-10" : "form-control col-sm-10" }}" 
                                        id="inputNombre" placeholder="Nombre" name="nombre" required pattern="{{ $REGEXP_NOMBRE }}" title="El nombre es obligatorio y tiene entre 3 y 25 caracteres">
                                 <div class="col-sm-10 invalid-feedback" id="error-for-inputNombre">
                                     El nombre es obligatorio y tiene entre 3 y 25 caracteres
@@ -34,7 +34,7 @@ Formulario registro
                             <label for="inputEmail" class="col-sm-2 col-form-label">Email</label>
                             <div class="col-sm-10">
                                 <input type="email" value="{{ (isset($email) ) ? $email : "" }}"
-                                       class="{{ (isset($emailOK) && !$emailOK) ? "form-control is-invalid col-sm-10" : "form-control col-sm-10" }}" id="inputEmail" placeholder="Email" 
+                                       class="{{ (isset($email) && !$email) ? "form-control is-invalid col-sm-10" : "form-control col-sm-10" }}" id="inputEmail" placeholder="Email" 
                                        name="email" required>
                                 <div class="col-sm-10 invalid-feedback">
                                     El email es obligatorio y/o no tiene el formato correcto
@@ -45,7 +45,7 @@ Formulario registro
                             <label for="inputPassword" class="col-sm-2 col-form-label">Password</label>
                             <div class="col-sm-10">
                                 <input type="password" value="{{ (isset($clave) ) ? $clave : "" }}"
-                                       class="{{ (isset($claveOK) && !$claveOK) ? "form-control is-invalid col-sm-10" : "form-control col-sm-10" }}" id="inputPassword" placeholder="Password" 
+                                       class="{{ (isset($clave) && !$clave) ? "form-control is-invalid col-sm-10" : "form-control col-sm-10" }}" id="inputPassword" placeholder="Password" 
                                        name="clave" required pattern="{{ $REGEXP_CLAVE }}" title="La clave tiene entre 4 y 8 caracteres e incluye al menos un número">
                                 <div class="col-sm-10 invalid-feedback" id="error-for-inputClave">
                                     La clave tiene entre 4 y 8 caracteres e incluye al menos un número
