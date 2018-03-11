@@ -22,23 +22,7 @@
                 <div class="navbar-header">
                     <a class="navbar-brand" href="index.php">User Mgmt</a>
                 </div>
-                @unless($auth->check())
-                <div class="d-flex">
-                    @yield('loginregistro')
-                    <!-- Authentication Links -->
-                </div>
-                @else
-                <div class="d-flex dropdown p-2">
-                    <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        {{ $auth->loggedUsuario()->getNombre() }} 
-                    </button>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <a class="dropdown-item" href="index.php?botonpetperfil">Perfil</a>
-                        <a class="dropdown-item" href="index.php?botonpetlogout">Logout</a>
-                        <a class="dropdown-item" href="index.php?botonpetbaja">Baja</a>
-                    </div>
-                </div>
-                @endunless
+                    @yield('topright')
             </nav>
             <div class= "d-flex flex-column" style="flex: 1 1 auto">
                 @yield('content')
