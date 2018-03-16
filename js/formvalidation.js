@@ -12,6 +12,7 @@ var hasError = function (field) {
     // If valid, return null
     if (validity.valid) {
         field.classList.remove('is-invalid');
+        field.classList.add('is-valid');
         return;
     }
     // If field is required and empty
@@ -79,7 +80,7 @@ var showError = function (field, error) {
         // Fetch all the forms we want to apply custom Bootstrap validation styles to
         forms.map(form => {
             form.addEventListener('submit', function (event) {
-                if (form.checkValidity() === false) {
+                if (!form.checkValidity()) {
                     event.preventDefault();
                     event.stopPropagation();
                 }
