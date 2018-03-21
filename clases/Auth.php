@@ -40,4 +40,9 @@ class Auth
     {
         return (isset($_SESSION['usuario']));
     }
+
+    public function existeSesion() : bool
+    {
+        return (session_status() === PHP_SESSION_ACTIVE);
+    }
 }

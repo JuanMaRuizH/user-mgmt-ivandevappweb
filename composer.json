@@ -17,6 +17,8 @@
             "name": "Ivan Rodriguez",
             "email": "jivanrod@gmail.com"
         }
-    ]
+    ],
+    "require-dev": {
+        "vlucas/valitron": "^1.4"
+    }
 }
-

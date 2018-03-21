@@ -54,23 +54,49 @@
  */
 
 require "vendor/autoload.php";
+require "validacion/patrones.php";
 
 use eftec\bladeone;
 use Dotenv\Dotenv;
+use Valitron\Validator;
 use App\BD;
 use App\Auth;
 use App\Usuario;
 use App\Pintor;
 
-// Expresión regular para comprobación de nombre
-// Cadena entre tres y 25 caracteres
-define("REGEXP_NOMBRE", "/^\w{3,25}$/");
-// Expresión regular para comprobación de clave
-// Cadena de 4 a 8 caracteres con al menos 1 digito
-define("REGEXP_CLAVE", "/^(?=.*\d).{4,8}$/");
-// Expresión regular para comprobación de Email
-define("REGEXP_EMAIL", "/^.+@[^\.].*\.[a-z]{2,}$/");
+$auth = Auth::getAuth();
 
+$auth->init();
+
+// Reglas de validación para validar el formulario en el servidor
+
+$c = 'constant';
+define(
+    'REGLAS',
+ ['identificador' => ['required', ['regex', "/{$c('REGEXP_IDENTIFICADOR')}/", 'message' => REGEXP_IDENTIFICADOR_DESC]],
+          'clave' => ['required', ['regex', "/{$c('REGEXP_CLAVE')}/", 'message' => REGEXP_CLAVE_DESC]],
+          'nombre' => [['regex', "/{$c('REGEXP_NOMBRE')}/", 'message' => REGEXP_NOMBRE_DESC]],
+          'apellidos' => [['regex', "/{$c('REGEXP_APELLIDOS')}/", 'message' => REGEXP_APELLIDOS_DESC]],
+          'ocupacion' => [['regex', "/{$c('REGEXP_OCUPACION')}/", 'message' => REGEXP_OCUPACION_DESC]],
+          'email' => ['required', ['email', 'message' => REGEXP_EMAIL_DESC]]
+]
+);
+
+// Lista de patrones utilizados para validar el formulario en el cliente
+
+define(
+    'PATRONES',
+ ['identificador' => ['regexp' => REGEXP_IDENTIFICADOR, 'mensaje' => REGEXP_IDENTIFICADOR_DESC],
+ 'nombre' => ['regexp' => REGEXP_NOMBRE, 'mensaje' => REGEXP_NOMBRE_DESC],
+ 'clave' => ['regexp' => REGEXP_CLAVE, 'mensaje' => REGEXP_CLAVE_DESC],
+ 'apellidos' => ['regexp' => REGEXP_APELLIDOS, 'mensaje' => REGEXP_APELLIDOS_DESC],
+ 'ocupacion' => ['regexp' => REGEXP_OCUPACION, 'mensaje' => REGEXP_OCUPACION_DESC],
+ 'email' => ['regexp' => REGEXP_EMAIL, 'mensaje' => REGEXP_EMAIL_DESC]
+]
+);
+
+
+ 
 
 $views = __DIR__ . '/vistas';
 $cache = __DIR__ . '/cache';
@@ -82,15 +108,9 @@ $dotenv->load();
 
 // Elimina los delimitadores de la expresión regular para que se pueda aplicar a un elemento HTML
 
-$REGEXP_NOMBRE = substr(REGEXP_NOMBRE, 1, strlen(REGEXP_NOMBRE) -2);
-$REGEXP_CLAVE = substr(REGEXP_CLAVE, 1, strlen(REGEXP_CLAVE) -2);
-$REGEXP_EMAIL = substr(REGEXP_EMAIL, 1, strlen(REGEXP_EMAIL) -2);
 
-$patterns = ["REGEXP_NOMBRE", "REGEXP_CLAVE" ,"REGEXP_EMAIL"];
 
-$auth = Auth::getAuth();
 
-$auth->init();
 
 try {
     $bd = BD::getConexion();
@@ -106,59 +126,59 @@ if ($auth->check()) {
         // destruyo la sesión
         $auth->logout();
         // Redirijo al cliente a la vista del formulario de login
-        echo $blade->run("formlogin", compact($patterns));
+        $patrones = array_intersect_key(PATRONES, array_fill_keys(['identificador', 'clave'], ""));
+        echo $blade->run("formlogin", compact('patrones'));
         die;
     } elseif (isset($_REQUEST['botonpetperfil'])) {
         $usuario = $auth->loggedUsuario();
         $pintores = Pintor::recuperaPintores($bd);
         // Muestro la vista de formulario de perfil
-
-        echo $blade->run("perfil", compact($patterns, 'usuario', 'pintores'));
+        $campos = ['identificador', 'nombre', 'apellidos', 'email', 'ocupacion', 'clave'];
+        $patrones = array_intersect_key(PATRONES, array_fill_keys($campos, ""));
+        echo $blade->run("perfil", compact('patrones', 'usuario', 'pintores'));
         die;
     } elseif (isset($_POST['botonpetprocperfil'])) {
         $usuario = $auth->loggedUsuario();
-        $nombre = filter_var(
-            trim(filter_input(INPUT_POST, 'nombre', FILTER_SANITIZE_STRING)),
-            FILTER_VALIDATE_REGEXP,
-            ['options' => ['regexp' => REGEXP_NOMBRE]]
-        );
-        $nombreAnterior = $usuario->getNombre();
-        $clave = filter_var(
-            trim(filter_input(INPUT_POST, 'clave', FILTER_SANITIZE_STRING)),
-            FILTER_VALIDATE_REGEXP,
-            ['options' => ['regexp' => REGEXP_CLAVE]]
-        );
-        $claveAnterior = $usuario->getClave();
-        $email = filter_var(
-            trim(filter_input(INPUT_POST, 'email', FILTER_SANITIZE_STRING)),
-            FILTER_VALIDATE_REGEXP,
-            ['options' => ['regexp' => REGEXP_EMAIL]]
-        );
-        $emailAnterior = $usuario->getEmail();
+        $identificador = trim(filter_input(INPUT_POST, 'identificador', FILTER_SANITIZE_STRING));
+        $nombre = trim(filter_input(INPUT_POST, 'nombre', FILTER_SANITIZE_STRING));
+        $apellidos = trim(filter_input(INPUT_POST, 'apellidos', FILTER_SANITIZE_STRING));
+        $email = trim(filter_input(INPUT_POST, 'email', FILTER_SANITIZE_STRING));
+        $ocupacion = trim(filter_input(INPUT_POST, 'ocupacion', FILTER_SANITIZE_STRING));
+        $clave = trim(filter_input(INPUT_POST, 'clave', FILTER_SANITIZE_STRING));
+        $genero = filter_input(INPUT_POST, 'genero', FILTER_DEFAULT);
+        $campos = ['identificador', 'nombre', 'apellidos', 'email', 'ocupacion', 'clave'];
+        $valores = [$identificador, $nombre, $apellidos, $email, $ocupacion, $clave];
         $pintor = $_POST['pintor'];
-        $pintorAnterior = $usuario->getPintor();
-        if (!$nombre || !$clave || !$email) {
+        $datos = array_combine($campos, $valores);
+        $reglas = array_intersect_key(REGLAS, array_fill_keys($campos, ""));
+        $v = new Validator($datos);
+        $v->mapFieldsRules($reglas);
+        $v->validate();
+        $errores = $v->errors();
+        if (!empty($errores)) {
             $pintores = Pintor::recuperaPintores($bd);
-            echo $blade->run("perfil", compact($patterns, 'usuario', 'pintores', 'nombre', 'clave', 'email'));
+            $patrones = array_intersect_key(PATRONES, array_fill_keys($campos, ""));
+            echo $blade->run("perfil", compact('patrones', 'datos', 'errores', 'usuario', 'pintores'));
             die;
         }
-        
-
+        $usuarioClone = clone $usuario;
+        $usuario->setIdentificador($identificador);
         $usuario->setNombre($nombre);
+        $usuario->setApellidos($apellidos);
         $usuario->setClave($clave);
         $usuario->setEmail($email);
+        $usuario->setOcupacion($ocupacion);
+        $usuario->setGenero($genero);
         $pintor = Pintor::recuperaPintorPorNombre($bd, $pintor);
         $usuario->setPintor($pintor);
         try {
             $usuario->persiste($bd);
         } catch (PDOException $e) {
-            $usuario->setNombre($nombreAnterior);
-            $usuario->setClave($claveAnterior);
-            $usuario->setEmail($emailAnterior);
-            $usuario->setPintor($pintorAnterior);
+            $usuario = $usuarioClone;
             $error = true;
             $pintores = Pintor::recuperaPintores($bd);
-            echo $blade->run("perfil", compact($patterns, 'usuario', 'pintores', 'error'));
+            $patrones = array_intersect_key(PATRONES, array_fill_keys($campos, ""));
+            echo $blade->run("perfil", compact('patrones', 'datos', 'errores', 'usuario', 'pintores'));
             die();
         }
         $cuadro = $usuario->getPintor()->getCuadroAleatorio();
@@ -176,34 +196,36 @@ if ($auth->check()) {
         // Redirijo al cliente a la vista de contenido
         $usuario = $auth->loggedUsuario();
         $cuadro = $usuario->getPintor()->getCuadroAleatorio();
-        echo $blade->run("private", compact('auth', 'cuadro'));
+        echo $blade->run("private", compact('usuario', 'cuadro'));
         die;
     }
 
     // Si se está solicitando el formulario de login
 } elseif ((empty($_REQUEST)) || isset($_REQUEST['botonpetlogin'])) {
+    $campos = ['identificador', 'clave'];
     // Redirijo al cliente a la vista del formulario de login
-    echo $blade->run("formlogin", compact($patterns));
+    $patrones = array_intersect_key(PATRONES, array_fill_keys($campos, ""));
+    echo $blade->run("formlogin", compact('patrones'));
     die;
 
 // Si se está enviando el formulario de login con los datos
 } elseif (isset($_REQUEST['botonpetproclogin'])) {
-    $nombre = filter_var(
-        trim(filter_input(INPUT_POST, 'nombre', FILTER_SANITIZE_STRING)),
-        FILTER_VALIDATE_REGEXP,
-        ['options' => ['regexp' => REGEXP_NOMBRE]]
-    );
-    $clave = filter_var(
-        trim(filter_input(INPUT_POST, 'clave', FILTER_SANITIZE_STRING)),
-        FILTER_VALIDATE_REGEXP,
-        ['options' => ['regexp' => REGEXP_CLAVE]]
-    );
+    $identificador = trim(filter_input(INPUT_POST, 'identificador', FILTER_SANITIZE_STRING));
+    $clave = trim(filter_input(INPUT_POST, 'clave', FILTER_SANITIZE_STRING));
+    $campos = ['identificador', 'clave'];
+    $datos = array_combine($campos, [$identificador, $clave]);
+    $reglas = array_intersect_key(REGLAS, array_fill_keys($campos, ""));
+    $v = new Validator($datos);
+    $v->mapFieldsRules($reglas);
+    $v->validate();
+    $errores = $v->errors();
 
-    if (!$nombre || !$clave) {
-        echo $blade->run("formlogin", compact($patterns, 'nombre', 'clave'));
+    if (!empty($errores)) {
+        $patrones = array_intersect_key(PATRONES, array_fill_keys($campos, ""));
+        echo $blade->run("formlogin", compact('patrones', 'datos', 'errores'));
         die;
     }
-    $usuario = Usuario::recuperaUsuarioPorCredencial($bd, $nombre, $clave);
+    $usuario = Usuario::recuperaUsuarioPorCredencial($bd, $identificador, $clave);
     if ($usuario) {
         $auth->login($usuario);
         // Redirijo al cliente a la vista de contenido
@@ -219,55 +241,53 @@ if ($auth->check()) {
         // Establezco un mensaje de error para la
         $error = true;
         // Redirijo al cliente a la vista del formulario de login
-        echo $blade->run("formlogin", compact($patterns, 'error'));
+        $patrones = array_intersect_key(PATRONES, array_fill_keys(['identificador', 'clave'], ""));
+        echo $blade->run("formlogin", compact('patrones', 'error'));
         die;
     }
-    // En cualquier otro caso
 } elseif (isset($_REQUEST['botonpetregistro'])) {
     $pintores = Pintor::recuperaPintores($bd);
-    // Si los credenciales son correctos
-    echo $blade->run("registro", compact($patterns, 'pintores'));
+    $patrones = array_intersect_key(PATRONES, array_fill_keys(['identificador', 'clave'], ""));
+    echo $blade->run("registro", compact('patrones', 'pintores'));
     die;
 } elseif (isset($_POST['botonpetprocregistro'])) {
-    $nombre = filter_var(
-        trim(filter_input(INPUT_POST, 'nombre', FILTER_SANITIZE_STRING)),
-        FILTER_VALIDATE_REGEXP,
-        ['options' => ['regexp' => REGEXP_NOMBRE]]
-    );
-    $clave = filter_var(
-        trim(filter_input(INPUT_POST, 'clave', FILTER_SANITIZE_STRING)),
-        FILTER_VALIDATE_REGEXP,
-        ['options' => ['regexp' => REGEXP_CLAVE]]
-    );
-    $email = filter_var(
-        trim(filter_input(INPUT_POST, 'email', FILTER_SANITIZE_STRING)),
-        FILTER_VALIDATE_REGEXP,
-        ['options' => ['regexp' => REGEXP_EMAIL]]
-    );
+    $identificador = trim(filter_input(INPUT_POST, 'identificador', FILTER_SANITIZE_STRING));
+    $clave = trim(filter_input(INPUT_POST, 'clave', FILTER_SANITIZE_STRING));
     $pintorNombre = $_POST['pintor'];
-    $pintores = Pintor::recuperaPintores($bd);
-    if (!$nombre || !$clave || !$email) {
-        echo $blade->run("registro", compact($patterns, 'nombre', 'clave', 'email'));
+    $campos = ['identificador', 'clave'];
+    $datos = array_combine($campos, [$identificador, $clave]);
+    $reglas = array_intersect_key(REGLAS, array_fill_keys($campos, ""));
+    $v = new Validator($datos);
+    $v->mapFieldsRules($reglas);
+    $v->validate();
+    $errores = $v->errors();
+    if (!empty($errores)) {
+        $pintores = Pintor::recuperaPintores($bd);
+        $patrones = array_intersect_key(PATRONES, array_fill_keys($campos, ""));
+        echo $blade->run("registro", compact('patrones', 'datos', 'errores'));
         die;
-    } 
-    
-    $usuario = new Usuario($nombre, $clave, $email);
+    }
+    $usuario = new Usuario($identificador, $clave);
     $usuario->setPintor(Pintor::recuperaPintorPorNombre($bd, $pintorNombre));
-        try {        
-            $usuario->persiste($bd);        
-        } catch (PDOException $e) {
-            $error = true;
-            echo $blade->run("registro", compact($patterns, 'error'));
-            die();
-        }
-        $auth->login($usuario);
-        // Redirijo al cliente a la vista de contenido
+    try {
+        $usuario->persiste($bd);
+    } catch (PDOException $e) {
+        $error = true;
+        $pintores = Pintor::recuperaPintores($bd);
+        $patrones = array_intersect_key(PATRONES, array_fill_keys($campos, ""));
+        echo $blade->run("registro", compact('patrones', 'datos', 'errores'));
+        die;
+    }
+    $auth->login($usuario);
+    // Redirijo al cliente a la vista de contenido
     $cuadro = $usuario->getPintor()->getCuadroAleatorio();
     echo $blade->run("private", compact('usuario', 'cuadro'));
     die;
 } else {
+    $campos = ['identificador', 'clave'];
     // Redirijo al cliente a la vista del formulario de login
-    echo $blade->run("formlogin", compact($patterns));
+    $patrones = array_intersect_key(PATRONES, array_fill_keys($campos, ""));
+    echo $blade->run("formlogin", compact('patrones'));
     die;
 }
 ?>

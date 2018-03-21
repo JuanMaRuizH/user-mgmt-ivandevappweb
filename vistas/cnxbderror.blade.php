@@ -1,4 +1,4 @@
-@extends('app', ['auth' => $auth]) 
+@extends('app') 
 @section('title') Conexion BD
 @endsection
  

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 07-02-2018 a las 21:40:16
+-- Tiempo de generación: 21-03-2018 a las 13:10:37
 -- Versión del servidor: 10.1.26-MariaDB
 -- Versión de PHP: 7.1.8
 
@@ -35,21 +35,6 @@ CREATE TABLE `cuadros` (
   `pintor_fk` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
---
--- Volcado de datos para la tabla `cuadros`
---
-
-INSERT INTO `cuadros` (`id`, `titulo`, `imagen`, `pintor_fk`) VALUES
-(1, 'La familia de Carlos IV', 'familia_de_Carlos_IV.jpg', 1),
-(2, 'Fusilamientos 3 de Mayo', 'fusilamientos_3_mayo.jpg', 1),
-(4, 'La habitación', 'habitacion.jpg', 3),
-(5, 'Las meninas', 'las_meninas.jpg', 2),
-(6, 'Los borrachos', 'los_borrachos.jpg', 2),
-(7, 'Los girasoles', 'los_girasoles.jpg', 3),
-(8, 'La maja vestida', 'maja_vestida.jpg', 1),
-(9, 'Noche estrellada', 'noche_estrellada.jpg', 3),
-(10, 'La rendición de Breda', 'rendicion_breda.jpg', 2);
-
 -- --------------------------------------------------------
 
 --
@@ -61,15 +46,6 @@ CREATE TABLE `pintores` (
   `nombre` varchar(60) COLLATE utf8_spanish_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
---
--- Volcado de datos para la tabla `pintores`
---
-
-INSERT INTO `pintores` (`id`, `nombre`) VALUES
-(1, 'Goya'),
-(2, 'Velazquez'),
-(3, 'Van Gogh');
-
 -- --------------------------------------------------------
 
 --
@@ -78,28 +54,16 @@ INSERT INTO `pintores` (`id`, `nombre`) VALUES
 
 CREATE TABLE `usuarios` (
   `id` int(11) NOT NULL,
-  `nombre` varchar(60) COLLATE utf8_spanish_ci NOT NULL,
+  `identificador` varchar(25) COLLATE utf8_spanish_ci NOT NULL,
+  `nombre` varchar(60) COLLATE utf8_spanish_ci DEFAULT '',
   `clave` varchar(20) COLLATE utf8_spanish_ci NOT NULL,
-  `email` varchar(60) COLLATE utf8_spanish_ci NOT NULL,
+  `email` varchar(60) COLLATE utf8_spanish_ci DEFAULT NULL,
+  `apellidos` varchar(100) COLLATE utf8_spanish_ci DEFAULT '',
+  `genero` enum('H','M') COLLATE utf8_spanish_ci DEFAULT NULL,
+  `ocupacion` varchar(100) COLLATE utf8_spanish_ci DEFAULT '',
+  `fecha_nacimiento` date DEFAULT '1970-12-12',
   `pintor_fk` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
-
---
--- Volcado de datos para la tabla `usuarios`
---
-
-INSERT INTO `usuarios` (`id`, `nombre`, `clave`, `email`, `pintor_fk`) VALUES
-(3, 'juan', 'juan', 'juan@sdfsdf.com', 2),
-(4, 'juan', 'ff', 'juan@gmail.com', 1),
-(5, 'ivan', 'ivan', 'ivan@asasd.com', 1),
-(6, 'aaa', 'aaa', 'aaa@aaa.com', 3),
-(7, 'aaa', 'aaa', 'aaa@aaa.com', 1),
-(8, 'aaa', 'aaa', 'aaa@aaa.com', 1),
-(9, 'bbc', 'bbb', 'bbb@bbb.com', 1),
-(10, '', '', '', 1),
-(11, '', '', '', 1),
-(12, '', '', '', 1),
-(13, '', '', '', 1);
 
 --
 -- Índices para tablas volcadas
@@ -121,7 +85,9 @@ ALTER TABLE `pintores`
 -- Indices de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `nombre_login` (`identificador`),
+  ADD UNIQUE KEY `email` (`email`);
 
 --
 -- AUTO_INCREMENT de las tablas volcadas
@@ -141,7 +107,7 @@ ALTER TABLE `pintores`
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;COMMIT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
