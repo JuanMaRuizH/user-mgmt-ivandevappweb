@@ -158,7 +158,10 @@ if ($auth->check()) {
         $usuario = $auth->loggedUsuario();
         $usuario->elimina($bd);
         $auth->logout();
-        echo $blade->run("formlogin", compact($patterns));
+        $campos = ['identificador', 'clave'];
+        // Redirijo al cliente a la vista del formulario de login
+        $patrones = array_intersect_key(PATRONES, array_fill_keys($campos, ""));
+        echo $blade->run("formlogin", compact('patrones'));
         die;
     }
     //En otro caso
