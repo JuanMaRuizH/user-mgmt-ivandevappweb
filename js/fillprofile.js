@@ -38,13 +38,23 @@ var helper = (function () {
                 'userId': 'me'
             }).then(function (res) {
                 var profile = res.result;
-                $('#inputNombre').val(profile.name.givenName || "");
-                $('#inputApellidos').val(profile.name.familyName || "");
-                $('#inputOcupacion').val(profile.occupation || "");
-                $('#inputEmail').val(profile.emails[0].value || "");
-                $gender = (profile.gender == 'male') ? 'H' : ((profile.gender == 'female') ? 'M' : "");
-
-                $('#inputGenero').val($gender);
+                var event = new Event('change');
+                inputNombre = document.querySelector('#inputNombre');
+                inputNombre.value = profile.name.givenName || ""; 
+                inputNombre.dispatchEvent(event);
+                inputApellidos = document.querySelector('#inputApellidos');
+                inputApellidos.value = profile.name.familyName || "";
+                inputApellidos.dispatchEvent(event);
+                inputOcupacion = document.querySelector('#inputOcupacion');
+                inputOcupacion.value = profile.occupation || "";
+                inputOcupacion.dispatchEvent(event);
+                inputEmail = document.querySelector('#inputEmail');
+                inputEmail.value = profile.emails[0].value || "";
+                inputEmail.dispatchEvent(event);
+                gender = (profile.gender == 'male') ? 'H' : ((profile.gender == 'female') ? 'M' : "");
+                inputGenero = document.querySelector('#inputGenero');
+                inputGenero.value = gender  || ""
+                inputGenero.dispatchEvent(event);
 
                 console.log(profile);
                 console.log(profile.givenName);

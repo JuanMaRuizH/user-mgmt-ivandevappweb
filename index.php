@@ -69,33 +69,6 @@ $auth = Auth::getAuth();
 $auth->init();
 
 // Reglas de validación para validar el formulario en el servidor
-
-$c = 'constant';
-define(
-    'REGLAS',
- ['identificador' => ['required', ['regex', "/{$c('REGEXP_IDENTIFICADOR')}/", 'message' => REGEXP_IDENTIFICADOR_DESC]],
-          'clave' => ['required', ['regex', "/{$c('REGEXP_CLAVE')}/", 'message' => REGEXP_CLAVE_DESC]],
-          'nombre' => [['regex', "/{$c('REGEXP_NOMBRE')}/", 'message' => REGEXP_NOMBRE_DESC]],
-          'apellidos' => [['regex', "/{$c('REGEXP_APELLIDOS')}/", 'message' => REGEXP_APELLIDOS_DESC]],
-          'ocupacion' => [['regex', "/{$c('REGEXP_OCUPACION')}/", 'message' => REGEXP_OCUPACION_DESC]],
-          'email' => ['required', ['email', 'message' => REGEXP_EMAIL_DESC]]
-]
-);
-
-// Lista de patrones utilizados para validar el formulario en el cliente
-
-define(
-    'PATRONES',
- ['identificador' => ['regexp' => REGEXP_IDENTIFICADOR, 'mensaje' => REGEXP_IDENTIFICADOR_DESC],
- 'nombre' => ['regexp' => REGEXP_NOMBRE, 'mensaje' => REGEXP_NOMBRE_DESC],
- 'clave' => ['regexp' => REGEXP_CLAVE, 'mensaje' => REGEXP_CLAVE_DESC],
- 'apellidos' => ['regexp' => REGEXP_APELLIDOS, 'mensaje' => REGEXP_APELLIDOS_DESC],
- 'ocupacion' => ['regexp' => REGEXP_OCUPACION, 'mensaje' => REGEXP_OCUPACION_DESC],
- 'email' => ['regexp' => REGEXP_EMAIL, 'mensaje' => REGEXP_EMAIL_DESC]
-]
-);
-
-
  
 
 $views = __DIR__ . '/vistas';
@@ -107,17 +80,14 @@ $dotenv = new Dotenv(__DIR__);
 $dotenv->load();
 
 // Elimina los delimitadores de la expresión regular para que se pueda aplicar a un elemento HTML
-
-
-
-
-
 try {
     $bd = BD::getConexion();
 } catch (PDOException $error) {
     echo $blade->run("cnxbderror", compact('error'));
     die;
 }
+
+$modoVal = $_ENV['MODO_VAL'];
 
 // Si el usuario ya está validado
 if ($auth->check()) {
@@ -135,7 +105,7 @@ if ($auth->check()) {
         // Muestro la vista de formulario de perfil
         $campos = ['identificador', 'nombre', 'apellidos', 'email', 'ocupacion', 'clave'];
         $patrones = array_intersect_key(PATRONES, array_fill_keys($campos, ""));
-        echo $blade->run("perfil", compact('patrones', 'usuario', 'pintores'));
+        echo $blade->run("perfil", compact('patrones', 'usuario', 'pintores', 'modoVal'));
         die;
     } elseif (isset($_POST['botonpetprocperfil'])) {
         $usuario = $auth->loggedUsuario();
@@ -158,7 +128,7 @@ if ($auth->check()) {
         if (!empty($errores)) {
             $pintores = Pintor::recuperaPintores($bd);
             $patrones = array_intersect_key(PATRONES, array_fill_keys($campos, ""));
-            echo $blade->run("perfil", compact('patrones', 'datos', 'errores', 'usuario', 'pintores'));
+            echo $blade->run("perfil", compact('patrones', 'datos', 'errores', 'usuario', 'pintores', 'modoVal'));
             die;
         }
         $usuarioClone = clone $usuario;
@@ -178,7 +148,7 @@ if ($auth->check()) {
             $error = true;
             $pintores = Pintor::recuperaPintores($bd);
             $patrones = array_intersect_key(PATRONES, array_fill_keys($campos, ""));
-            echo $blade->run("perfil", compact('patrones', 'datos', 'errores', 'usuario', 'pintores'));
+            echo $blade->run("perfil", compact('patrones', 'datos', 'errores', 'usuario', 'pintores', 'modoVal'));
             die();
         }
         $cuadro = $usuario->getPintor()->getCuadroAleatorio();
@@ -205,7 +175,7 @@ if ($auth->check()) {
     $campos = ['identificador', 'clave'];
     // Redirijo al cliente a la vista del formulario de login
     $patrones = array_intersect_key(PATRONES, array_fill_keys($campos, ""));
-    echo $blade->run("formlogin", compact('patrones'));
+    echo $blade->run("formlogin", compact('patrones', 'modoVal'));
     die;
 
 // Si se está enviando el formulario de login con los datos
@@ -222,7 +192,7 @@ if ($auth->check()) {
 
     if (!empty($errores)) {
         $patrones = array_intersect_key(PATRONES, array_fill_keys($campos, ""));
-        echo $blade->run("formlogin", compact('patrones', 'datos', 'errores'));
+        echo $blade->run("formlogin", compact('patrones', 'datos', 'errores', 'modoVal'));
         die;
     }
     $usuario = Usuario::recuperaUsuarioPorCredencial($bd, $identificador, $clave);
@@ -242,13 +212,13 @@ if ($auth->check()) {
         $error = true;
         // Redirijo al cliente a la vista del formulario de login
         $patrones = array_intersect_key(PATRONES, array_fill_keys(['identificador', 'clave'], ""));
-        echo $blade->run("formlogin", compact('patrones', 'error'));
+        echo $blade->run("formlogin", compact('patrones', 'error', 'modoVal'));
         die;
     }
 } elseif (isset($_REQUEST['botonpetregistro'])) {
     $pintores = Pintor::recuperaPintores($bd);
     $patrones = array_intersect_key(PATRONES, array_fill_keys(['identificador', 'clave'], ""));
-    echo $blade->run("registro", compact('patrones', 'pintores'));
+    echo $blade->run("registro", compact('patrones', 'pintores', 'modoVal'));
     die;
 } elseif (isset($_POST['botonpetprocregistro'])) {
     $identificador = trim(filter_input(INPUT_POST, 'identificador', FILTER_SANITIZE_STRING));
@@ -264,7 +234,7 @@ if ($auth->check()) {
     if (!empty($errores)) {
         $pintores = Pintor::recuperaPintores($bd);
         $patrones = array_intersect_key(PATRONES, array_fill_keys($campos, ""));
-        echo $blade->run("registro", compact('patrones', 'datos', 'errores'));
+        echo $blade->run("registro", compact('patrones', 'datos', 'errores', 'pintores', 'modoVal'));
         die;
     }
     $usuario = new Usuario($identificador, $clave);
@@ -275,7 +245,7 @@ if ($auth->check()) {
         $error = true;
         $pintores = Pintor::recuperaPintores($bd);
         $patrones = array_intersect_key(PATRONES, array_fill_keys($campos, ""));
-        echo $blade->run("registro", compact('patrones', 'datos', 'errores'));
+        echo $blade->run("registro", compact('patrones', 'datos', 'errores', 'modoVal'));
         die;
     }
     $auth->login($usuario);
@@ -287,7 +257,7 @@ if ($auth->check()) {
     $campos = ['identificador', 'clave'];
     // Redirijo al cliente a la vista del formulario de login
     $patrones = array_intersect_key(PATRONES, array_fill_keys($campos, ""));
-    echo $blade->run("formlogin", compact('patrones'));
+    echo $blade->run("formlogin", compact('patrones'), 'modoVal');
     die;
 }
 ?>

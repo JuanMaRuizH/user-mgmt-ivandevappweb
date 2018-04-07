@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     @yield('head')
     <meta charset="utf-8">
@@ -15,19 +16,23 @@
     <!-- Optional theme -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
         crossorigin="anonymous">
+    <script>
+        var modoVal='{{ $modoVal }}'
+    </script>
 </head>
+
 <body>
     <div style="display: flex; flex-flow: column; height: 100vh">
         <nav class="navbar navbar-default d-flex flex-row">
             <div class="navbar-header">
                 <a class="navbar-brand" href="index.php">User Mgmt</a>
             </div>
-           
+
             <div class="d-flex">
                 @yield('topright')
                 <!-- Authentication Links -->
             </div>
-            
+
         </nav>
         <div class="d-flex flex-column" style="flex: 1 1 auto">
             @yield('content')
@@ -40,6 +45,9 @@
         crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4"
         crossorigin="anonymous"></script>
-@yield('script')
+    <script src="js/formvalidation.js"></script>
+    @yield('script')
+
 </body>
+
 </html>
