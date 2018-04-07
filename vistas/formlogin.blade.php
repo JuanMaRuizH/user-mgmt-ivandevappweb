@@ -17,25 +17,21 @@
             <div class="panel-body mt-3">
                 <form class="form-horizontal validate" method="POST" action="index.php" id='formlogin'>
                     <div class="form-group row">
-                        <label for="inputNombre" class="col-sm-2 col-form-label">Nombre</label>
+                        <label for="inputIdentificador" class="col-sm-2 col-form-label">Identificador</label>
                         <div class="col-sm-10">
-                            <input id="inputNombre" type="text" value="{{(isset($nombre) && $nombre ) ? $nombre : "" }}" class="form-control col-sm-10 {{ isset($nombre) ? ((!$nombre) ? "
-                                is-invalid " : "is-valid ") : " " }}" id="inputNombre" placeholder="Nombre" name="nombre" required
-                                pattern="{{ $REGEXP_NOMBRE }}" title="El nombre es obligatorio y tiene entre 3 y 25 caracteres">
-                            <div class="col-sm-10 invalid-feedback" id="error-for-inputNombre">
-                                El nombre es obligatorio y tiene entre 3 y 25 caracteres
-                            </div>
+                            <input type="text" id="inputIdentificador" placeholder="Identificador" name="identificador"  required value="{{ (isset($datos) && $datos['identificador'] ) ? $datos['identificador'] : '' }}"
+                                class="form-control col-sm-10 {{ isset($errores) ? (isset($errores['identificador']) ? 'is-invalid ' : 'is-valid ') : '' }}"
+                                pattern="{{ $patrones['identificador']['regexp'] }}" title="{{ $patrones['identificador']['mensaje'] }}">
+                            <div class="col-sm-10 invalid-feedback" id="error-for-inputIdentificador">{{ $errores['identificador'][0] }}</div>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="inputPassword" class="col-sm-2 col-form-label">Password</label>
                         <div class="col-sm-10">
-                            <input type="password" value="{{ (isset($clave) && $clave) ? $clave : "" }}" class="form-control col-sm-10 {{ isset($clave) ? ((!$clave) ? "
-                                is-invalid " : "is-valid ") : " " }}" id="inputPassword" placeholder="Password" name="clave"
-                                required pattern="{{ $REGEXP_CLAVE }}" title="La clave tiene entre 4 y 8 caracteres e incluye al menos un número">
-                            <div class="col-sm-10 invalid-feedback" id="error-for-inputPassword">
-                                La clave tiene entre 4 y 8 caracteres e incluye al menos un número
-                            </div>
+                            <input type="password" id="inputPassword" placeholder="Password" name="clave" required value="{{ (isset($datos) && $datos['clave'] ) ? $datos['clave'] : '' }}"
+                                class="form-control col-sm-10 {{ isset($errores) ? (isset($errores['clave']) ? 'is-invalid ' : 'is-valid ') : '' }}"
+                                pattern="{{ $patrones['clave']['regexp'] }}" title="{{ $patrones['clave']['mensaje'] }}">
+                            <div class="col-sm-10 invalid-feedback" id="error-for-inputPassword">{{ $errores['clave'][0] }}</div>
                         </div>
                     </div>
                     <div class="form-group">

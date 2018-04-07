@@ -1,8 +1,3 @@
-//Add the novalidate when the JS loads
-
-// Listen to all blur events
-
-// Validate the field
 var hasError = function (field) {
     var error = "";
     // Don't validate submits, buttons, file and reset inputs, and disabled fields
@@ -23,69 +18,69 @@ var hasError = function (field) {
         // Email
         if (field.type === 'email') $error = 'El email es obligatorio y/o no tiene el formato correcto';
         // URL
-        else if (field.type === 'url') $error = 'Please enter a URL.';
+        else if (field.type === 'url') $error = 'Por favor introduce una URL correcta';
     }
     // If too short
-    else if (validity.tooShort) $error = 'Please lengthen this text to ' + field.getAttribute('minLength') + ' characters or more. You are currently using ' + field.value.length + ' characters.';
+    else if (validity.tooShort) $error = 'Por favor alarga este texto a ' + field.getAttribute('minLength') + ' caracteres o mas. Estás usando ' + field.value.length + ' caracteres.';
     // If too long
-    else if (validity.tooLong) $error = 'Please shorten this text to no more than ' + field.getAttribute('maxLength') + ' characters. You are currently using ' + field.value.length + ' characters.';
+    else if (validity.tooLong) $error = 'Por favor ajusta este texto a ' + field.getAttribute('maxLength') + ' caracteres. Estás usando ' + field.value.length + ' caracteres.';
     // If number input isn't a number
-    else if (validity.badInput) $error = 'Please enter a number.';
+    else if (validity.badInput) $error = 'Por favor introduce un número.';
     // If a number value doesn't match the step interval
-    else if (validity.stepMismatch) $error = 'Please select a valid value.';
+    else if (validity.stepMismatch) $error = 'Por favor introduce un valor válido.';
     // If a number field is over the max
-    else if (validity.rangeOverflow) $error = 'Please select a value that is no more than ' + field.getAttribute('max') + '.';
+    else if (validity.rangeOverflow) $error = 'Por favor selecciona un valor no mayor de ' + field.getAttribute('max') + '.';
     // If a number field is below the min
-    else if (validity.rangeUnderflow) $error = 'Please select a value that is no less than ' + field.getAttribute('min') + '.';
+    else if (validity.rangeUnderflow) $error = 'Por favor selecciona un valor no menor de' + field.getAttribute('min') + '.';
     // If pattern doesn't match
     else if (validity.patternMismatch) {
         // If pattern info is included, return custom error
-        $error = field.getAttribute('title') || 'Please match the requested format.';
+        $error = field.getAttribute('title') || 'Por favor usa el siguiente formato.';
     }
     // If all else fails, return a generic catchall error
     else {
-        $error = 'The value you entered for this field is invalid.';
+        $error = 'El valor introducido en este campo no es válido.';
     }
     return $error;
 };
 var showError = function (field, error) {
-    // Add error class to field
-    // field.classList.add('error');
     field.classList.add('is-invalid');
-    // Get field id or name
     var id = field.id || field.name;
     if (!id) return;
-    // Check if error message field already exists
-    // If not, create one
     var message = field.form.querySelector('.invalid-feedback#error-for-' + id);
     if (message) message.innerHTML = error;
 };
-(function () {
+
+(function (modoVal) {
     'use strict';
-    window.addEventListener('load', function () {
-        var forms = [].slice.call(document.querySelectorAll('.validate'));
-        forms.map(form => form.setAttribute('novalidate', true));
-        forms.map(form => {
-            form.addEventListener('blur', function (event) {
-                // Only run if the field is in a form to be validated
-                if (!event.target.form.classList.contains('validate')) return;
-                // Validate the field
-                var error = hasError(event.target);
-                // If there's an error, show it
-                if (error) {
-                    showError(event.target, error);
-                }
-            }, true)
+    if ((modoVal === "cliente") || (modoVal === "servidor")) {
+        window.addEventListener('load', function () {
+            var form = document.querySelector('.validate');
+            form.setAttribute('novalidate', true);
+            if (modoVal === "cliente") {
+                form.addEventListener('blur', function (event) {
+                    if (!event.target.form.classList.contains('validate')) return;
+                    var error = hasError(event.target);
+                    if (error) {
+                        showError(event.target, error);
+                    }
+                }, true);
+                form.addEventListener('invalid', function (event) {
+                    if (!event.target.form.classList.contains('validate')) return;
+                    var error = hasError(event.target);
+                    if (error) {
+                        showError(event.target, error);
+                    }
+                }, true);
+
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                });
+            }
         });
-        // Fetch all the forms we want to apply custom Bootstrap validation styles to
-        forms.map(form => {
-            form.addEventListener('submit', function (event) {
-                if (!form.checkValidity()) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                }
-                form.classList.add('was-validated');
-            }, false);
-        });
-    }, false);
-})();
+    }
+})(modoVal);

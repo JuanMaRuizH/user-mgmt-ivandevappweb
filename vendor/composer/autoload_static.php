@@ -37,11 +37,22 @@ class ComposerStaticInita052612658a38f392a2b651a4ba59692
         ),
     );
 
+    public static $prefixesPsr0 = array (
+        'V' => 
+        array (
+            'Valitron' => 
+            array (
+                0 => __DIR__ . '/..' . '/vlucas/valitron/src',
+            ),
+        ),
+    );
+
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
             $loader->prefixLengthsPsr4 = ComposerStaticInita052612658a38f392a2b651a4ba59692::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInita052612658a38f392a2b651a4ba59692::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInita052612658a38f392a2b651a4ba59692::$prefixesPsr0;
 
         }, null, ClassLoader::class);
     }

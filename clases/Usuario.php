@@ -7,16 +7,20 @@ use \PDO as PDO;
 class Usuario
 {
     private $id;
+    private $identificador;
     private $nombre;
+    private $apellidos;
+    private $genero;
+    private $ocupacion;
     private $clave;
     private $email;
     private $pintor;
 
-    public static function recuperaUsuarioPorCredencial(PDO $bd, string $nombre, string $clave): ?Usuario
+    public static function recuperaUsuarioPorCredencial(PDO $bd, string $identificador, string $clave): ?Usuario
     {
-        $sql = 'select * from usuarios where nombre=:nombre and clave=:clave';
+        $sql = 'select * from usuarios where identificador=:identificador and clave=:clave';
         $sth = $bd->prepare($sql);
-        $sth->execute([":nombre" => $nombre, ":clave" => $clave]);
+        $sth->execute([":identificador" => $identificador, ":clave" => $clave]);
         $sth->setFetchMode(PDO::FETCH_CLASS, Usuario::class);
         $usuario = ($sth->fetch()) ?: null;
         if ($usuario) {
@@ -25,8 +29,11 @@ class Usuario
         return $usuario;
     }
 
-    public function __construct(string $nombre = null, string $clave = null, string $email = null, string $pintorNombre = null)
+    public function __construct(string $identificador = null, string $clave = null, string $nombre = null, string $email = null, string $pintorNombre = null)
     {
+        if (!is_null($identificador)) {
+            $this->identificador = $identificador;
+        }
         if (!is_null($nombre)) {
             $this->nombre = $nombre;
         }
@@ -43,7 +50,23 @@ class Usuario
         return $this->id;
     }
 
-    public function getNombre(): string
+    public function setId(int $id)
+    {
+        $this->id = $id;
+    }
+
+    public function getIdentificador(): string
+    {
+        return $this->identificador;
+    }
+
+    public function setIdentificador(string $identificador)
+    {
+        $this->identificador = $identificador;
+    }
+
+
+    public function getNombre(): ?string
     {
         return $this->nombre;
     }
@@ -53,7 +76,37 @@ class Usuario
         $this->nombre = $nombre;
     }
 
-    public function getClave(): string
+    public function getApellidos(): ?string
+    {
+        return $this->apellidos;
+    }
+
+    public function setApellidos(string $apellidos)
+    {
+        $this->apellidos = $apellidos;
+    }
+
+    public function getOcupacion(): ?string
+    {
+        return $this->ocupacion;
+    }
+
+    public function setOcupacion(string $ocupacion)
+    {
+        $this->ocupacion = $ocupacion;
+    }
+
+    public function getGenero(): ?string
+    {
+        return $this->genero;
+    }
+
+    public function setGenero(string $genero)
+    {
+        $this->genero = $genero;
+    }
+
+    public function getClave(): ?string
     {
         return $this->clave;
     }
@@ -63,7 +116,7 @@ class Usuario
         $this->clave = $clave;
     }
 
-    public function getEmail(): string
+    public function getEmail(): ?string
     {
         return $this->email;
     }
@@ -87,15 +140,15 @@ class Usuario
     {
         try {
             if ($this->id) {
-                $sql = "update usuarios set nombre = :nombre, clave = :clave, email = :email, pintor_fk = :pintor where id = :id";
+                $sql = "update usuarios set identificador = :identificador, nombre = :nombre, clave = :clave, email = :email, apellidos = :apellidos, genero = :genero, ocupacion = :ocupacion, pintor_fk = :pintor where id = :id";
                 $sth = $bd->prepare($sql);
-                $result = $sth->execute([":nombre" => $this->getNombre(), ":clave" => $this->getclave(), ":email" => $this->getEmail(), ":pintor" => $this->getPintor()->getId(), ":id" => $this->id]);
+                $result = $sth->execute([":identificador" => $this->getIdentificador(), ":nombre" => $this->getNombre(), ":clave" => $this->getClave(), ":email" => $this->getEmail(), ":apellidos" => $this->getApellidos(), ":genero" => $this->getGenero(), ":ocupacion" => $this->getOcupacion(), ":pintor" => $this->getPintor()->getId(), ":id" => $this->id]);
             } else {
-                $sql = "insert into usuarios (nombre, clave, email, pintor_fk) values (:nombre, :clave, :email, :pintor)";
+                $sql = "insert into usuarios (identificador, clave, pintor_fk) values (:identificador, :clave, :pintor)";
                 $sth = $bd->prepare($sql);
-                $result = $sth->execute([":nombre" => $this->getNombre(), ":clave" => $this->getClave(), ":email" => $this->getEmail(), ":pintor" => $this->getPintor()->getId()]);
+                $result = $sth->execute([":identificador" => $this->getIdentificador(), ":clave" => $this->getClave(), ":pintor" => $this->getPintor()->getId()]);
                 if ($result) {
-                    $this->id = (int) $bd->lastInsertId();
+                    $this->setId((int) $bd->lastInsertId());
                 }
             }
             return ($result);
