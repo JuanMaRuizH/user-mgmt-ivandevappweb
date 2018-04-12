@@ -26,7 +26,7 @@ define(
           'nombre' => [['regex', "/{$c('REGEXP_NOMBRE')}/", 'message' => REGEXP_NOMBRE_DESC]],
           'apellidos' => [['regex', "/{$c('REGEXP_APELLIDOS')}/", 'message' => REGEXP_APELLIDOS_DESC]],
           'ocupacion' => [['regex', "/{$c('REGEXP_OCUPACION')}/", 'message' => REGEXP_OCUPACION_DESC]],
-          'email' => ['required', ['email', 'message' => REGEXP_EMAIL_DESC]]
+          'email' => [['email', 'message' => REGEXP_EMAIL_DESC]]
 ]
 );
 
