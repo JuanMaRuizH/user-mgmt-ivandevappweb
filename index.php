@@ -22,7 +22,6 @@
 
 session_start();
 $credenciales = [["ivan", "ivan"], ["pepe", "pepe"]];
-define('ERROR_MESSAGE', "Credenciales Incorrectas");
 $error = false;
 
 if (isset($_SESSION['username'])) {
@@ -30,22 +29,24 @@ if (isset($_SESSION['username'])) {
         session_unset();
         session_destroy();
         setcookie(session_name(), '', 0, '/');
-        include 'formlogin.php';
+        include 'vistas/formlogin.php';
     } else {
-        include 'private.php';
+        include 'vistas/private.php';
     }
 } else {
     if (empty($_POST)) {
-        include 'formlogin.php';
+        include 'vistas/formlogin.php';
     } elseif (filter_input(INPUT_POST, 'botonenviologin')) {
         $nombre = trim(filter_input(INPUT_POST, 'nombre', FILTER_SANITIZE_STRING));
         $contrasenia = trim(filter_input(INPUT_POST, 'contrasenia', FILTER_SANITIZE_STRING));
         if (in_array([$nombre, $contrasenia], $credenciales)) {
             $_SESSION['username'] = $nombre;
-            include 'private.php';
+            include 'vistas/private.php';
+            die;
         } else {
             $error = true;
-            include 'formlogin.php';
+            include 'vistas/formlogin.php';
+            die;
         }
     }
 }
