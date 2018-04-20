@@ -22,4 +22,12 @@
 <div class="d-flex justify-content-center mt-4">   
     <img style="flex: 1; object-fit: scale-down; height:300px" class="col-md-8 rounded" src= '{{ "img/".$cuadro->getImagen() }}'/>   
 </div>
+<div class="d-flex justify-content-center mt-4">   
+    <img style="flex: 1; object-fit: scale-down; height:300px" class="col-md-8 rounded" src= '{{ "img/".$cuadro->getImagen() }}'/>   
+</div>
+@endsection
+
+@section ('scripts')
+<script src="js/museuminfo.js"></script>
+<script async defer src="https://apis.google.com/js/client:platform.js?onload=startApp"></script>
 @endsection

@@ -56,6 +56,7 @@
 require "vendor/autoload.php";
 require "validacion/patrones.php";
 
+
 use eftec\bladeone;
 use Dotenv\Dotenv;
 use Valitron\Validator;
@@ -63,6 +64,9 @@ use App\BD;
 use App\Auth;
 use App\Usuario;
 use App\Pintor;
+use App\SimpleSoapClient;
+
+define('LOCATION_WSDL', 'http://www.ipswitch.com/netapps/geolocation/iplocate.asmx?WSDL');
 
 $auth = Auth::getAuth();
 
@@ -205,6 +209,18 @@ if ($auth->check()) {
 
         $cuadro = $usuario->getPintor()->getCuadroAleatorio();
 
+        try {
+            $soapClient = new SimpleSoapClient('wsdl', LOCATION_WSDL);
+        } catch (Exception $exception) {
+            die('Error initializing SOAP client: ' . $exception->getMessage());
+        }
+        try {
+            $response = $soapClient->GetLocationRawOutput(['sIPAddress' => '25.34.56.12']);
+           // echo "Response from SOAP service: $response<br>";
+        } catch (Exception $exception) {
+            die('Error inserting into SOAP service: ' . $exception->getMessage());
+        }
+
         echo $blade->run("private", compact('usuario', 'cuadro', 'error'));
         die;
     }
@@ -254,6 +270,20 @@ if ($auth->check()) {
     $auth->login($usuario);
     // Redirijo al cliente a la vista de contenido
     $cuadro = $usuario->getPintor()->getCuadroAleatorio();
+
+    try {
+        $soapClient = new SimpleSoapClient('wsdl', LOCATION_WSDL);
+    } catch (Exception $exception) {
+        die('Error initializing SOAP client: ' . $exception->getMessage());
+    }
+    try {
+        $response = $soapClient->GetLocationRawOutput('23.45.67.89');
+        echo "Response from SOAP service: $response<br>";
+    } catch (Exception $exception) {
+        die('Error inserting into SOAP service: ' . $exception->getMessage());
+    }
+           
+
     echo $blade->run("private", compact('usuario', 'cuadro'));
     die;
 } else {
