@@ -83,6 +83,8 @@ $blade = new bladeone\BladeOne($views, $cache);
 $dotenv = new Dotenv(__DIR__);
 $dotenv->load();
 
+define('IPs', ['194.224.155.98', '185.86.151.11', '91.208.181.163']);
+// 194.224.155.98 185.86.151.11 91.208.181.163
 // Elimina los delimitadores de la expresión regular para que se pueda aplicar a un elemento HTML
 try {
     $bd = BD::getConexion();
@@ -101,7 +103,7 @@ if ($auth->check()) {
         $auth->logout();
         // Redirijo al cliente a la vista del formulario de login
         $patrones = array_intersect_key(PATRONES, array_fill_keys(['identificador', 'clave'], ""));
-        echo $blade->run("formlogin", compact('patrones'));
+        echo $blade->run("formlogin", compact('patrones', 'modoVal'));
         die;
     } elseif (isset($_REQUEST['botonpetperfil'])) {
         $usuario = $auth->loggedUsuario();
@@ -156,7 +158,14 @@ if ($auth->check()) {
             die();
         }
         $cuadro = $usuario->getPintor()->getCuadroAleatorio();
-        echo $blade->run("private", compact('usuario', 'cuadro'));
+        try {
+            $soapClient = new SimpleSoapClient('wsdl', LOCATION_WSDL);
+            $location = $soapClient->GetLocationRawOutput(['sIPAddress' => IPs[array_rand(IPs)]]);
+            $geolocation = $location->GetLocationRawOutputResult->geolocation_data;
+        } catch (Exception $exception) {
+            die('Error: ' . $exception->getMessage());
+        }
+        echo $blade->run("private", compact('usuario', 'cuadro', 'geolocation'));
         die;
     } elseif (isset($_REQUEST['botonpetbaja'])) {
         $usuario = $auth->loggedUsuario();
@@ -173,7 +182,14 @@ if ($auth->check()) {
         // Redirijo al cliente a la vista de contenido
         $usuario = $auth->loggedUsuario();
         $cuadro = $usuario->getPintor()->getCuadroAleatorio();
-        echo $blade->run("private", compact('usuario', 'cuadro'));
+        try {
+            $soapClient = new SimpleSoapClient('wsdl', LOCATION_WSDL);
+            $location = $soapClient->GetLocationRawOutput(['sIPAddress' => IPs[array_rand(IPs)]]);
+            $geolocation = $location->GetLocationRawOutputResult->geolocation_data;
+        } catch (Exception $exception) {
+            die('Error: ' . $exception->getMessage());
+        }
+        echo $blade->run("private", compact('usuario', 'cuadro', 'geolocation'));
         die;
     }
 
@@ -211,17 +227,13 @@ if ($auth->check()) {
 
         try {
             $soapClient = new SimpleSoapClient('wsdl', LOCATION_WSDL);
+            $location = $soapClient->GetLocationRawOutput(['sIPAddress' => IPs[array_rand(IPs)]]);
+            $geolocation = $location->GetLocationRawOutputResult->geolocation_data;
         } catch (Exception $exception) {
-            die('Error initializing SOAP client: ' . $exception->getMessage());
-        }
-        try {
-            $response = $soapClient->GetLocationRawOutput(['sIPAddress' => '25.34.56.12']);
-           // echo "Response from SOAP service: $response<br>";
-        } catch (Exception $exception) {
-            die('Error inserting into SOAP service: ' . $exception->getMessage());
+            die('Error: ' . $exception->getMessage());
         }
 
-        echo $blade->run("private", compact('usuario', 'cuadro', 'error'));
+        echo $blade->run("private", compact('usuario', 'cuadro', 'error', 'geolocation'));
         die;
     }
 
@@ -273,18 +285,13 @@ if ($auth->check()) {
 
     try {
         $soapClient = new SimpleSoapClient('wsdl', LOCATION_WSDL);
+        $location = $soapClient->GetLocationRawOutput(['sIPAddress' => IPs[array_rand(IPs)]]);
+        $geolocation = $location->GetLocationRawOutputResult->geolocation_data;
     } catch (Exception $exception) {
-        die('Error initializing SOAP client: ' . $exception->getMessage());
-    }
-    try {
-        $response = $soapClient->GetLocationRawOutput('23.45.67.89');
-        echo "Response from SOAP service: $response<br>";
-    } catch (Exception $exception) {
-        die('Error inserting into SOAP service: ' . $exception->getMessage());
+        die('Error: ' . $exception->getMessage());
     }
            
-
-    echo $blade->run("private", compact('usuario', 'cuadro'));
+    echo $blade->run("private", compact('usuario', 'cuadro', 'geolocation'));
     die;
 } else {
     $campos = ['identificador', 'clave'];

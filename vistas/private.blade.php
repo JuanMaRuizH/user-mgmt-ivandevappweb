@@ -20,14 +20,18 @@
     Bienvenido {{ $usuario->getIdentificador() }} !!
 </div>
 <div class="d-flex justify-content-center mt-4">   
-    <img style="flex: 1; object-fit: scale-down; height:300px" class="col-md-8 rounded" src= '{{ "img/".$cuadro->getImagen() }}'/>   
+    <img style="flex: 1; object-fit: scale-down; height:250px" class="col-md-8 rounded" src= '{{ "img/".$cuadro->getImagen() }}'/>   
 </div>
-<div class="d-flex justify-content-center mt-4">   
-    <img style="flex: 1; object-fit: scale-down; height:300px" class="col-md-8 rounded" src= '{{ "img/".$cuadro->getImagen() }}'/>   
+@if (isset ($geolocation))
+<div id="coor" data-region="{{$geolocation->region_name}}" data-country="{{$geolocation->country_name}}" data-continent="{{$geolocation->continent_name}}" style="display: none;"></div>
+<div class="d-flex justify-content-center mt-4">      
+    <div id="map" style="flex: 1; object-fit: scale-down; height:250px" class="col-md-8 rounded"></div>   
 </div>
+@endif
+
 @endsection
 
-@section ('scripts')
-<script src="js/museuminfo.js"></script>
-<script async defer src="https://apis.google.com/js/client:platform.js?onload=startApp"></script>
+@section ('script')
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBrr-VtPrN852IJbkdX8QkkXBEmsZBuJms&callback=initMap&libraries=places"></script>
+<script src="js/citymuseums.js"></script>
 @endsection
