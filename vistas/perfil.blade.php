@@ -105,9 +105,7 @@
                                 </button>
                             </div>
                             <div class="col">
-                                <a onclick="signIn();" class="btn btn-primary">
-                                    Rellenar con Google+
-                                </a>
+                                <a id="rellenaperfil" class="btn btn-primary">Rellenar con Google+</a>
                             </div>
                         </div>
                     </form>
@@ -120,5 +118,7 @@
  
 @section('script')
 <script src="js/fillprofile.js"></script>
-<script async defer src="https://apis.google.com/js/client:platform.js?onload=startApp"></script>
+<script async defer src="https://apis.google.com/js/api.js"
+      onload="this.onload=function(){};loadClient()"
+      onreadystatechange="if (this.readyState === 'complete') this.onload()"></script>
 @endsection
