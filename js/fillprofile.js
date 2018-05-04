@@ -1,9 +1,17 @@
 
+var discoveryDocs = ["https://people.googleapis.com/$discovery/rest?version=v1"];
+var scopes = 'profile';
+var clientId = '308612886182-5gbmi9iqmsjnlaqlsrftk96d8nhmnj52.apps.googleusercontent.com';
+var apiKey = 'AIzaSyBrr-VtPrN852IJbkdX8QkkXBEmsZBuJms';
+
+var fillButton = document.getElementById('rellenaperfil');
+
 var helper = (function () {
     return {
         onSignInCallback: function (authResult) {
             if (authResult.isSignedIn.get()) {
                 helper.profile();
+                authResult.disconnect();
             } else {
                 if (authResult['error'] || authResult.currentUser.get().getAuthResponse() == null) {
                     console.log('There was an error: ' + authResult['error']);
@@ -39,9 +47,7 @@ var helper = (function () {
                     inputGenero = document.querySelector('#inputGenero');
                     inputGenero.value = gender || ""
                     inputGenero.dispatchEvent(event);
-
                     console.log(profile);
-
                 }, function (err) {
                     var error = err.result;
                     console.log(error);
@@ -51,37 +57,21 @@ var helper = (function () {
 })();
 
 
-var updateSignIn = function (signed) {
-    console.log('update sign in state');
-    if (signed) {
-        helper.onSignInCallback(gapi.auth2.getAuthInstance());
-
-    }
-   // if (auth2.isSignedIn.get()) {
-     //   console.log('signed in');
-       // helper.onSignInCallback(gapi.auth2.getAuthInstance());
-    // } 
-    else {
-        console.log('signed out');
-       // helper.onSignInCallback(gapi.auth2.getAuthInstance());
-    }
+function loadClient() {
+    // Load the API client and auth2 library
+    gapi.load('client:auth2', initClient);
 }
 
-function startApp() {
-    gapi.load('auth2', function () {
-        //gapi.client.load('plus', 'v1').then(function () {
-        gapi.client.load('https://people.googleapis.com/$discovery/rest?version=v1').then(function () {
-            gapi.auth2.init({
-                fetch_basic_profile: false,
-                scope: 'https://www.googleapis.com/auth/plus.login'
-            }).then(
-                function () {
-                    console.log('init');
-                    auth2 = gapi.auth2.getAuthInstance();
-                    auth2.isSignedIn.listen(updateSignIn);
-                    auth2.then(updateSignIn);
-                });
-        });
+function initClient() {
+    gapi.client.init({
+        apiKey: apiKey,
+        discoveryDocs: discoveryDocs,
+        clientId: clientId,
+        scope: scopes
+    }).then(function () {
+        fillButton.onclick = signIn;
+    }, function (error) {
+        console.log(error);
     });
 }
 
@@ -90,7 +80,8 @@ function signIn() {
     var auth2 = gapi.auth2.getAuthInstance();
     // Sign the user in, and then retrieve their ID.
     auth2.signIn().then(function () {
-        auth2.then(updateSignIn);
+        //auth2.then(updateSignIn);
+        auth2.then(helper.onSignInCallback(gapi.auth2.getAuthInstance()));
         console.log(auth2.currentUser.get().getId());
     });
 }
